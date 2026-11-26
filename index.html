@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Turni Servizio Civile – Misericordia di Marineo</title>
+<style>
+  :root {
+    --blu: #0aa3dc;
+    --azzurro: #7fd6ff;
+    --giallo: #ffe600;
+    --grigio: #e0e0e0;
+    --testo: #111;
+    --bordo: #111;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: var(--testo); background: #fff; }
+  .wrap { max-width: 480px; margin: 0 auto; padding-bottom: 40px; }
+
+  header { background: linear-gradient(90deg, var(--blu), var(--azzurro) 70%, #fff); border-bottom: 5px solid var(--giallo); padding: 18px 20px; display: flex; align-items: center; gap: 12px; }
+  header img { height: 52px; width: auto; }
+  header h1 { margin: 0; font-family: "Cinzel", Georgia, serif; font-weight: 600; font-size: 22px; letter-spacing: .02em; color: #fff; line-height: 1.1; }
+  header h1 small { display: block; font-size: 13px; color: var(--giallo); margin-top: 4px; }
+
+  form { padding: 0 24px; }
+  label.campo { display: block; margin: 28px 0 8px; font-size: 14px; }
+  input[type=text] { width: 100%; height: 62px; border: 1.5px solid #777; border-radius: 14px; padding: 0 16px; font-size: 17px; }
+  input[type=text]:focus-visible { outline: 3px solid var(--blu); outline-offset: 2px; }
+  hr { border: 0; border-top: 2px solid var(--blu); margin: 22px 0 14px; }
+  .istruzioni { font-size: 13px; margin: 0 0 12px; }
+
+  .griglia { display: grid; grid-template-columns: 1fr 64px 64px; align-items: center; row-gap: 38px; column-gap: 36px; margin-top: 10px; }
+  .intest { font-size: 12px; text-align: center; font-weight: 600; }
+  .giorno { font-weight: 800; font-size: 17px; text-transform: uppercase; text-align: center; }
+
+  .check { position: relative; width: 56px; height: 56px; justify-self: center; }
+  .check input { position: absolute; inset: 0; opacity: 0; margin: 0; width: 100%; height: 100%; cursor: pointer; }
+  .check span { display: block; width: 100%; height: 100%; background: var(--grigio); border: 1.5px solid var(--bordo); border-radius: 8px; }
+  .check svg { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; }
+  .check input:checked ~ svg { opacity: 1; }
+  .check input:focus-visible ~ span { outline: 3px solid var(--blu); outline-offset: 3px; }
+  .check input:disabled { cursor: not-allowed; }
+  .check input:disabled ~ span { background: #f1f1f1; border-color: #999; }
+  .check .no { opacity: 0; }
+  .check input:disabled ~ .no { opacity: 1; }
+
+  .legenda { margin: 40px 0 0; font-weight: 800; font-size: 16px; line-height: 1.8; }
+
+  button { margin-top: 28px; width: 100%; height: 54px; border: 0; border-radius: 14px; background: var(--blu); color: #fff; font-size: 17px; font-weight: 700; cursor: pointer; }
+  button:disabled { opacity: .6; cursor: wait; }
+  #esito { margin-top: 16px; font-size: 15px; min-height: 22px; }
+  #esito.ok { color: #0a7a2f; }
+  #esito.err { color: #b00020; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <!-- Sostituisci con i loghi reali: <img src="logo-misericordia.png" alt="Misericordia di Marineo"> -->
+    <h1>Turni Servizio Civile<small>Misericordia di Marineo</small></h1>
+  </header>
+
+  <form id="form" novalidate>
+    <label class="campo" for="volontario">Volontario</label>
+    <input type="text" id="volontario" name="volontario" autocomplete="name" required>
+
+    <hr>
+    <p class="istruzioni">Seleziona i tuoi turni (mattina o pomeriggio).</p>
+
+    <div class="griglia" id="griglia">
+      <span></span><span class="intest">Mattina</span><span class="intest">Pomeriggio</span>
+    </div>
+
+    <p class="legenda" id="legenda"></p>
+
+    <button type="submit" id="invia">Invia turni</button>
+    <div id="esito" role="status" aria-live="polite"></div>
+  </form>
+</div>
+
+<script>
+// ====== CONFIGURAZIONE ======
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzmKKpLWddF1zN4hvt7dU7u2L63b_vPrYULkCSAoH_lkwMFWDcCYc0Af7KJ52ALAm8O/exec";
+const GIORNI = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
+// Turni non selezionabili (come la barra sul Lunedì pomeriggio nel mockup): "giorno-turno"
+const NON_DISPONIBILI = ["0-P"];
+const LEGENDA = ["Mattine: Lunedì, Martedì, Mercoledì", "Pomeriggi: Giovedì, Venerdì, Sabato"];
+// ============================
+
+const SVG_SPUNTA = '<svg viewBox="0 0 56 56" fill="none" stroke="#111" stroke-width="1.5"><path d="M12 32 L22 44 L44 10"/></svg>';
+const SVG_BARRA = '<svg class="no" viewBox="0 0 56 56" fill="none" stroke="#111" stroke-width="1.5"><path d="M10 46 L46 10"/></svg>';
+
+const griglia = document.getElementById("griglia");
+GIORNI.forEach((g, i) => {
+  const riga = [`<span class="giorno">${g}</span>`];
+  ["M", "P"].forEach(t => {
+    const dis = NON_DISPONIBILI.includes(`${i}-${t}`) ? "disabled" : "";
+    riga.push(`<label class="check"><input type="checkbox" name="turno" value="${i}-${t}" aria-label="${g} ${t === "M" ? "mattina" : "pomeriggio"}" ${dis}><span></span>${SVG_SPUNTA}${SVG_BARRA}</label>`);
+  });
+  griglia.insertAdjacentHTML("beforeend", riga.join(""));
+});
+document.getElementById("legenda").innerHTML = LEGENDA.join("<br>");
+
+const form = document.getElementById("form");
+const esito = document.getElementById("esito");
+const btn = document.getElementById("invia");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  esito.className = ""; esito.textContent = "";
+  const nome = form.volontario.value.trim();
+  const turni = [...form.querySelectorAll('input[name=turno]:checked')].map(c => c.value);
+  if (!nome) { esito.className = "err"; esito.textContent = "Inserisci il tuo nome."; form.volontario.focus(); return; }
+  if (!turni.length) { esito.className = "err"; esito.textContent = "Seleziona almeno un turno."; return; }
+
+  btn.disabled = true; btn.textContent = "Invio in corso…";
+  try {
+    // text/plain evita la richiesta preflight CORS che Apps Script non gestisce
+    const r = await fetch(URL_SCRIPT, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ volontario: nome, turni }) });
+    const dati = await r.json();
+    if (!dati.ok) throw new Error(dati.errore || "Errore sconosciuto");
+    esito.className = "ok"; esito.textContent = "Turni inviati. Puoi reinviare per modificarli.";
+  } catch (err) {
+    esito.className = "err"; esito.textContent = "Invio non riuscito: " + err.message;
+  } finally {
+    btn.disabled = false; btn.textContent = "Invia turni";
+  }
+});
+</script>
+</body>
+</html>
