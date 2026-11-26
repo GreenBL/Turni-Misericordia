@@ -82,6 +82,7 @@
   .legenda-key i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; border: 1.5px solid currentColor; }
   .legenda-key i.f { background: currentColor; opacity: .55; }
   .legenda-key i.m { background: var(--brand); border-color: var(--brand); }
+  .legenda-key i.x { background: #e5383b; border-color: #e5383b; }
 
   /* Giorni e turni */
   .head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
@@ -101,6 +102,7 @@
   .slot .dots span { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid currentColor; opacity: .55; }
   .slot .dots span.altro { background: currentColor; }
   .slot .dots span.mio { background: var(--brand); border-color: var(--brand); opacity: 1; }
+  .slot .dots span.extra { background: #e5383b; border-color: #e5383b; opacity: 1; }
   .slot .st { font-size: 13px; font-weight: 700; }
   .slot .nomi { font-size: 11.5px; line-height: 1.3; color: var(--muted); min-height: 15px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .slot .tick { position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; border-radius: 50%; background: #fff; color: var(--brand); display: none; place-items: center; }
@@ -111,6 +113,7 @@
   .slot[aria-pressed="true"] .nomi { opacity: .9; }
   .slot[aria-pressed="true"] .dots span { border-color: #fff; }
   .slot[aria-pressed="true"] .dots span.mio { background: #fff; border-color: #fff; }
+  .slot[aria-pressed="true"] .dots span.extra { background: #e5383b; border-color: #fff; }
   .slot[aria-pressed="true"] .tick { display: grid; }
   .slot:disabled { cursor: not-allowed; color: var(--muted); background: repeating-linear-gradient(135deg, transparent 0 7px, color-mix(in srgb, var(--muted) 12%, transparent) 7px 14px), var(--card); }
   .slot:disabled .ico { color: var(--muted); }
@@ -194,6 +197,7 @@
         <span><i class="f"></i>posto preso</span>
         <span><i></i>posto libero</span>
         <span><i class="m"></i>il tuo posto</span>
+        <span><i class="x"></i>straordinario</span>
       </div>
       <div class="giorni loading" id="giorni"></div>
     </section>
@@ -216,7 +220,7 @@
 <script>
 "use strict";
 // ================= CONFIGURAZIONE =================
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzuuacqT_WYYi9-fMtXNBkoBHytqBkVVKdWNvg5-f9jNTSLYbuKCRtHFEMewZYsFnr-/exec";
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwCm9iNeArvDfzoeoZtAVl4Fs1iTtZ-IJi_Vw06Ni4vxd-1PXZkkdDt9Ofu2DC2tPmB/exec";
 const GIORNI = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
 const POLL_MS = 10000; // ogni quanto aggiornare i posti liberi
 // Capienza, volontari e turni non disponibili si impostano in Code.gs
@@ -297,7 +301,7 @@ async function postTurni(nome, turni) {
 
 // ---------- modalità demo (senza backend) ----------
 const DEMO_VOL = ["PARISI", "VALENTI", "SPINELLA", "CUTTITTA", "VITRANO", "OLIVERI", "NASTASI"];
-const demoDB = { VALENTI: ["0-M", "1-M"], OLIVERI: ["0-M", "3-P"], SPINELLA: ["0-M", "1-M", "3-P"], CUTTITTA: ["0-M", "3-P"] };
+const demoDB = { VALENTI: ["0-M", "1-M"], OLIVERI: ["0-M", "3-P"], SPINELLA: ["0-M", "1-M", "3-P"], CUTTITTA: ["0-M", "3-P"], VITRANO: ["0-M"] };
 function demoComponi(nome) {
   const slot = {};
   for (let d = 0; d < 7; d++) ["M", "P"].forEach((t) => { slot[d + "-" + t] = []; });
@@ -309,7 +313,7 @@ function demoComponi(nome) {
 const demoStato = (nome) => new Promise((res) => setTimeout(() => res(demoComponi(nome)), 500));
 const demoPost = (nome, turni) => new Promise((res) => setTimeout(() => {
   const st = demoComponi(nome);
-  const conf = turni.filter((k) => st.slot[k].filter((n) => n !== nome).length >= 4);
+  const conf = turni.filter((k) => !st.slot[k].includes(nome) && st.slot[k].length >= 4);
   if (conf.length) return res(Object.assign(st, { ok: false, conflitti: conf, errore: "Alcuni turni sono stati appena presi da altri." }));
   if (turni.length) demoDB[nome] = turni.slice(); else delete demoDB[nome];
   res(demoComponi(nome));
@@ -319,7 +323,9 @@ const demoPost = (nome, turni) => new Promise((res) => setTimeout(() => {
 function info(k) {
   const nomi = S.slot[k] || [];
   const altri = nomi.filter((n) => n !== S.volontario);
-  return { altri, mio: S.sel.has(k), piena: altri.length >= S.cap, nd: S.nonDisp.includes(k) };
+  const mio = S.sel.has(k);
+  const tot = altri.length + (mio ? 1 : 0);
+  return { altri, mio, tot, straord: tot > S.cap, piena: altri.length >= S.cap, nd: S.nonDisp.includes(k) };
 }
 
 function applica(st, reset) {
@@ -416,15 +422,17 @@ function disegnaChips() {
 
 function disegnaSlot(k) {
   const r = slotRefs[k];
-  const { altri, mio, piena, nd } = info(k);
+  const { altri, mio, tot, straord, piena, nd } = info(k);
   const occupato = S.caricando || S.invio || !S.pronto;
+  const tuoSalvato = S.saved.has(k); // già tuo sul foglio: resta modificabile anche se straordinario
   r.b.setAttribute("aria-pressed", mio ? "true" : "false");
-  r.b.disabled = occupato || nd || (piena && !mio);
+  r.b.disabled = occupato || nd || (piena && !mio && !tuoSalvato);
   r.b.classList.toggle("locked", !S.volontario);
 
   let dots = "";
-  for (let i = 0; i < S.cap; i++) {
-    const c = i < altri.length ? "altro" : (mio && i === altri.length ? "mio" : "");
+  const n = Math.max(S.cap, tot);
+  for (let i = 0; i < n; i++) {
+    const c = i >= S.cap ? "extra" : (i < altri.length ? "altro" : (mio && i === altri.length ? "mio" : ""));
     dots += '<span class="' + c + '"></span>';
   }
   r.dots.innerHTML = dots;
@@ -432,6 +440,7 @@ function disegnaSlot(k) {
   let testo;
   if (!S.pronto) testo = "…";
   else if (nd) testo = "Non disponibile";
+  else if (straord) testo = "Straordinario";
   else if (mio) testo = "Scelto da te";
   else if (piena) testo = "Al completo";
   else { const l = S.cap - altri.length; testo = l + (l === 1 ? " posto libero" : " posti liberi"); }
@@ -492,7 +501,7 @@ function toggle(k) {
     return;
   }
   const { piena, nd, mio } = info(k);
-  if (nd || (piena && !mio)) return;
+  if (nd || (piena && !mio && !S.saved.has(k))) return;
   if (S.sel.has(k)) S.sel.delete(k); else S.sel.add(k);
   disegnaSlot(k);
   disegnaBar();
