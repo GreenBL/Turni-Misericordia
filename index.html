@@ -140,6 +140,14 @@
   #errore.show { display: block; }
   #errore button { margin-top: 12px; height: 44px; padding: 0 20px; border: 0; border-radius: 12px; background: var(--brand); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
 
+  /* Sezioni che compaiono dopo la scelta del cognome */
+  main { overflow-x: clip; }
+  .rivela { display: none; transform-origin: 50% 0; }
+  .rivela.visibile { display: block; animation: entra .75s cubic-bezier(.16, 1, .3, 1) both; }
+  #legenda.rivela.visibile { animation-delay: .14s; }
+  #sez-turni { scroll-margin-top: 14px; }
+  @keyframes entra { from { opacity: 0; transform: scale(1.2); filter: blur(8px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
+
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   .chip:focus-visible, .slot:focus-visible, #invia:focus-visible { outline-color: var(--brand); outline-offset: 3px; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
@@ -149,7 +157,7 @@
 <div class="app">
   <header class="top">
     <div class="marchio">
-      <img src="misericordialogo3.png" alt="" onerror="this.remove();document.getElementById('emblema').style.display='block'">
+      <img src="logomisericordia3.png" alt="" onerror="this.remove();document.getElementById('emblema').style.display='block'">
       <svg id="emblema" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z" fill="#d62828"/></svg>
     </div>
     <div class="titoli">
@@ -176,7 +184,7 @@
       </div>
     </section>
 
-    <section class="card" id="sez-turni" aria-labelledby="t-turni">
+    <section class="card rivela" id="sez-turni" aria-labelledby="t-turni">
       <div class="head">
         <h2 id="t-turni">I tuoi turni</h2>
         <span id="agg" hidden></span>
@@ -190,7 +198,7 @@
       <div class="giorni loading" id="giorni"></div>
     </section>
 
-    <section class="card promemoria" id="legenda"></section>
+    <section class="card promemoria rivela" id="legenda"></section>
   </main>
 
   <div class="bar">
@@ -208,7 +216,7 @@
 <script>
 "use strict";
 // ================= CONFIGURAZIONE =================
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxW_0CINsByFS9mv_9DINLrk36OyWFBN_yP0eUBRhd2_eMIx292qblC3MvHbbqOVVK1/exec";
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzuuacqT_WYYi9-fMtXNBkoBHytqBkVVKdWNvg5-f9jNTSLYbuKCRtHFEMewZYsFnr-/exec";
 const GIORNI = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
 const POLL_MS = 10000; // ogni quanto aggiornare i posti liberi
 // Capienza, volontari e turni non disponibili si impostano in Code.gs
@@ -294,7 +302,7 @@ function demoComponi(nome) {
   const slot = {};
   for (let d = 0; d < 7; d++) ["M", "P"].forEach((t) => { slot[d + "-" + t] = []; });
   Object.keys(demoDB).forEach((n) => demoDB[n].forEach((k) => slot[k].push(n)));
-  return { ok: true, capacita: 4, nonDisponibili: ["0-P"], slot,
+  return { ok: true, capacita: 4, nonDisponibili: [], slot,
     volontari: DEMO_VOL.map((n) => ({ nome: n, inviato: !!demoDB[n] })),
     miei: nome && demoDB[nome] ? demoDB[nome].slice() : [] };
 }
@@ -490,6 +498,17 @@ function toggle(k) {
   disegnaBar();
 }
 
+let rivelato = false;
+function rivela(mostra) {
+  const sezioni = [$("sez-turni"), $("legenda")];
+  sezioni.forEach((el) => el.classList.toggle("visibile", mostra));
+  if (mostra && !rivelato) {
+    rivelato = true;
+    setTimeout(() => $("sez-turni").scrollIntoView({ behavior: "smooth", block: "start" }), 250);
+  }
+  if (!mostra) rivelato = false;
+}
+
 async function scegli(nome) {
   if (nome === S.volontario || S.caricando || S.invio) return;
   if (sporco() && !confirm("Hai modifiche non inviate. Cambiando volontario andranno perse. Continuare?")) return;
@@ -498,6 +517,7 @@ async function scegli(nome) {
   S.sel = new Set();
   S.saved = new Set();
   S.caricando = true;
+  rivela(true);
   disegnaTutto();
   try {
     // Qui si controlla la disponibilità aggiornata, nel momento in cui scegli il nome
@@ -507,6 +527,7 @@ async function scegli(nome) {
   } catch (e) {
     if (seq !== S.seq) return;
     S.volontario = null;
+    rivela(false);
     toast(e.message, "err");
   } finally {
     if (seq === S.seq) { S.caricando = false; disegnaTutto(); }
