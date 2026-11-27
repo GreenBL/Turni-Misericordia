@@ -3,16 +3,44 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b8fd0">
+<meta name="theme-color" content="#076aa3">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Turni SC">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Turni Servizio Civile – Misericordia di Marineo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem("turni-tema")==="light")document.documentElement.dataset.tema="light"}catch(e){}</script>
 <style>
+  /* Tema scuro di default; il chiaro si attiva con l'interruttore in alto */
   :root {
+    --brand: #2aa7e6;
+    --brand-2: #53c4f7;
+    --sel-a: #0f7fba;
+    --sel-b: #1f9bd8;
+    --sel: linear-gradient(135deg, #0f7fba, #1f9bd8);
+    --accent: #ffd60a;
+    --bg: #0b131a;
+    --card: #131f29;
+    --ink: #eaf2f8;
+    --muted: #93a6b6;
+    --line: #243543;
+    --ok: #3ccf9b;
+    --err: #ff7a7a;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+  :root[data-tema="light"] {
     --brand: #0b8fd0;
     --brand-2: #2bb7f0;
-    --accent: #ffd60a;
+    --sel-a: #0a80bb;
+    --sel-b: #1fa3de;
+    --sel: linear-gradient(135deg, #0a80bb, #1fa3de);
     --bg: #eef5fa;
     --card: #ffffff;
     --ink: #0f1d2a;
@@ -21,49 +49,38 @@
     --ok: #12805c;
     --err: #c62828;
     --shadow: 0 1px 2px rgba(15,29,42,.06), 0 8px 24px rgba(15,29,42,.06);
-    color-scheme: light dark;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --brand: #2aa7e6;
-      --brand-2: #53c4f7;
-      --bg: #0b131a;
-      --card: #131f29;
-      --ink: #eaf2f8;
-      --muted: #93a6b6;
-      --line: #243543;
-      --ok: #3ccf9b;
-      --err: #ff7a7a;
-      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
-    }
+    color-scheme: light;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html, body { overscroll-behavior: none; } /* niente effetto elastico né pull-to-refresh */
   body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 16px; line-height: 1.4; }
   .app { max-width: 520px; margin: 0 auto; min-height: 100vh; }
 
   /* Header: blu del mockup, filo giallo, motivo di cerchi */
-  .top { position: relative; overflow: hidden; display: flex; align-items: center; gap: 16px; padding: calc(22px + env(safe-area-inset-top, 0px)) 20px 26px; background: linear-gradient(105deg, #076aa3 0%, var(--brand) 55%, var(--brand-2) 100%); border-bottom: 6px solid var(--accent); border-radius: 0 0 28px 28px; box-shadow: 0 10px 28px color-mix(in srgb, var(--brand) 30%, transparent); }
+  .top { position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: stretch; gap: 14px; padding: calc(16px + env(safe-area-inset-top, 0px)) 20px 24px; background: linear-gradient(105deg, #076aa3 0%, #0b8fd0 55%, #2bb7f0 100%); border-bottom: 6px solid var(--accent); border-radius: 0 0 28px 28px; box-shadow: 0 10px 28px color-mix(in srgb, var(--brand) 30%, transparent); }
   .top::before { content: ""; position: absolute; right: -64px; top: -80px; width: 230px; height: 230px; border-radius: 50%; border: 30px solid rgba(255,255,255,.12); pointer-events: none; }
   .top::after { content: ""; position: absolute; right: 36px; bottom: -96px; width: 170px; height: 170px; border-radius: 50%; background: rgba(255,255,255,.10); pointer-events: none; }
   .top > * { position: relative; z-index: 1; }
-  .marchio {
-    flex: none;
-    width: 66px;
-    height: 66px;
-    border-radius: 0;
-    background: transparent;
-    display: grid;
-    place-items: center;
-    overflow: hidden;
-    box-shadow: none;
-}
-  .marchio img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
-  .marchio svg { width: 36px; height: 36px; display: none; }
+  .marchio { flex: none; height: 68px; display: grid; place-items: center; }
+  .marchio img { display: block; height: 68px; width: auto; max-width: 96px; object-fit: contain; filter: drop-shadow(0 4px 7px rgba(0,30,60,.5)); }
+  .marchio svg { width: 46px; height: 46px; display: none; filter: drop-shadow(0 4px 7px rgba(0,30,60,.5)); }
   .titoli { min-width: 0; }
   .top h1 { margin: 0; font-family: Cinzel, Georgia, serif; font-weight: 700; font-size: clamp(20px, 5.8vw, 27px); letter-spacing: .02em; line-height: 1.1; color: #fff; text-shadow: 0 1px 3px rgba(0,40,80,.35); }
   .top .org { margin: 5px 0 0; font-family: Cinzel, Georgia, serif; font-weight: 600; font-size: 13px; letter-spacing: .05em; color: var(--accent); text-shadow: 0 1px 2px rgba(0,40,80,.4); }
-  .pill { display: inline-block; margin-top: 11px; padding: 4px 11px; border-radius: 999px; background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.3); color: #fff; font-size: 12px; font-weight: 700; }
+  .barra { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .brand { display: flex; align-items: center; gap: 16px; }
+  .azioni { display: flex; gap: 8px; }
+  .icona { width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255,255,255,.4); background: rgba(0,45,85,.32); color: #fff; display: grid; place-items: center; cursor: pointer; padding: 0; transition: transform .12s, background .15s; }
+  .icona:hover { background: rgba(0,45,85,.5); }
+  .icona:active { transform: scale(.93); }
+  .icona[hidden] { display: none; }
+  .icona svg { width: 20px; height: 20px; }
+  .icona .luna { display: none; }
+  :root[data-tema="light"] .icona .sole { display: none; }
+  :root[data-tema="light"] .icona .luna { display: block; }
+  .icona:focus-visible { outline-color: #fff; }
+  .pill { display: inline-block; padding: 5px 12px; border-radius: 999px; background: rgba(0,45,85,.3); border: 1px solid rgba(255,255,255,.35); color: #fff; font-size: 12px; font-weight: 700; }
 
   main { padding: 16px 16px 150px; display: grid; gap: 14px; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px 16px; box-shadow: var(--shadow); }
@@ -71,7 +88,7 @@
   .card .sub { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
 
   .demo { background: #fff4c2; color: #5a4600; border-radius: 12px; padding: 10px 14px; font-size: 13px; font-weight: 600; }
-  @media (prefers-color-scheme: dark) { .demo { background: #3a3200; color: #ffe680; } }
+  :root:not([data-tema="light"]) .demo { background: #3a3200; color: #ffe680; }
 
   /* Scelta volontario */
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
@@ -79,7 +96,7 @@
   .chip:active { transform: scale(.97); }
   .chip .av { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--brand) 14%, transparent); color: var(--brand); font-weight: 800; font-size: 15px; }
   .chip .fatto { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); margin-left: 2px; }
-  .chip[aria-pressed="true"] { background: linear-gradient(135deg, var(--brand), var(--brand-2)); border-color: transparent; color: #fff; box-shadow: 0 6px 16px color-mix(in srgb, var(--brand) 35%, transparent); }
+  .chip[aria-pressed="true"] { background: linear-gradient(135deg, var(--sel-a), var(--sel-b)); border-color: transparent; color: #fff; box-shadow: 0 6px 16px color-mix(in srgb, var(--brand) 35%, transparent); }
   .chip[aria-pressed="true"] .av { background: rgba(255,255,255,.25); color: #fff; }
   .chip[aria-pressed="true"] .fatto { background: #fff; }
   .chip:disabled { opacity: .55; cursor: wait; }
@@ -96,8 +113,8 @@
 
   /* Giorni e turni */
   .head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
-  #agg { font-size: 12px; color: var(--muted); white-space: nowrap; }
-  #agg::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); margin-right: 6px; }
+  #agg, #agg2 { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  #agg::before, #agg2::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); margin-right: 6px; }
   .giorni { margin-top: 14px; display: grid; gap: 16px; transition: opacity .2s; }
   .giorni.loading { opacity: .45; pointer-events: none; }
   .giorno h3 { margin: 0 0 8px; font-size: 14px; font-weight: 800; letter-spacing: .01em; }
@@ -118,7 +135,7 @@
   .slot .tick { position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; border-radius: 50%; background: #fff; color: var(--brand); display: none; place-items: center; }
   .slot .tick svg { width: 14px; height: 14px; }
 
-  .slot[aria-pressed="true"] { background: linear-gradient(135deg, var(--brand), var(--brand-2)); border-color: transparent; color: #fff; box-shadow: 0 8px 20px color-mix(in srgb, var(--brand) 38%, transparent); }
+  .slot[aria-pressed="true"] { background: linear-gradient(135deg, var(--sel-a), var(--sel-b)); border-color: transparent; color: #fff; box-shadow: 0 8px 20px color-mix(in srgb, var(--brand) 38%, transparent); }
   .slot[aria-pressed="true"] .ico, .slot[aria-pressed="true"] .nomi { color: #fff; }
   .slot[aria-pressed="true"] .nomi { opacity: .9; }
   .slot[aria-pressed="true"] .dots span { border-color: #fff; }
@@ -140,11 +157,11 @@
   .bar .txt { min-width: 0; flex: 1; }
   .bar .t1 { font-weight: 800; font-size: 15px; }
   .bar .t2 { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  #invia { flex: none; height: 50px; padding: 0 22px; border: 0; border-radius: 14px; font: inherit; font-weight: 800; font-size: 15px; color: #fff; background: linear-gradient(135deg, var(--brand), var(--brand-2)); cursor: pointer; box-shadow: 0 6px 16px color-mix(in srgb, var(--brand) 35%, transparent); transition: transform .12s, opacity .15s; }
+  #invia { flex: none; height: 50px; padding: 0 22px; border: 0; border-radius: 14px; font: inherit; font-weight: 800; font-size: 15px; color: #fff; background: linear-gradient(135deg, var(--sel-a), var(--sel-b)); cursor: pointer; box-shadow: 0 6px 16px color-mix(in srgb, var(--brand) 35%, transparent); transition: transform .12s, opacity .15s; }
   #invia:active:not(:disabled) { transform: scale(.97); }
   #invia:disabled { opacity: .45; box-shadow: none; cursor: not-allowed; }
 
-  #toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); z-index: 10; max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 14px; background: var(--ink); color: var(--bg); font-weight: 600; font-size: 14px; text-align: center; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
+  #toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); z-index: 30; max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 14px; background: var(--ink); color: var(--bg); font-weight: 600; font-size: 14px; text-align: center; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
   #toast.show { opacity: 1; transform: translate(-50%, 0); }
   #toast.ok { background: var(--ok); color: #fff; }
   #toast.err { background: var(--err); color: #fff; }
@@ -158,8 +175,221 @@
   .rivela { display: none; transform-origin: 50% 0; }
   .rivela.visibile { display: block; animation: entra .75s cubic-bezier(.16, 1, .3, 1) both; }
   #legenda.rivela.visibile { animation-delay: .14s; }
-  #sez-turni { scroll-margin-top: 14px; }
+  #sez-turni { scroll-margin-top: calc(84px + env(safe-area-inset-top, 0px)); }
   @keyframes entra { from { opacity: 0; transform: scale(1.2); filter: blur(8px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
+
+  /* Vista completa (per screenshot e condivisione) */
+  #vista { position: fixed; inset: 0; z-index: 20; display: none; overflow-y: auto; overscroll-behavior: none; background: var(--bg); padding: calc(12px + env(safe-area-inset-top, 0px)) 14px calc(24px + env(safe-area-inset-bottom, 0px)); }
+  #vista.aperta { display: block; animation: apri .4s cubic-bezier(.16, 1, .3, 1) both; }
+  @keyframes apri { from { opacity: 0; transform: translateY(18px) scale(.98); } to { opacity: 1; transform: none; } }
+  .vista-in { max-width: 520px; margin: 0 auto; }
+  .vista-barra { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .vista-barra .spazio { flex: 1; }
+  .vista-barra .tasto { height: 40px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: inherit; font-weight: 700; font-size: 14px; cursor: pointer; }
+  .vista-barra .tasto:active { transform: scale(.96); }
+  #vista.pulita .vista-barra { display: none; }
+  .foglio { background: var(--card); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); }
+  .foglio-testa { padding: 16px 18px 14px; background: linear-gradient(105deg, #076aa3 0%, #0b8fd0 60%, #2bb7f0 100%); border-bottom: 5px solid var(--accent); color: #fff; }
+  .foglio-testa h2 { margin: 0; font-family: Cinzel, Georgia, serif; font-weight: 700; font-size: 20px; letter-spacing: .02em; }
+  .foglio-testa p { margin: 3px 0 0; font-family: Cinzel, Georgia, serif; font-weight: 600; font-size: 12.5px; letter-spacing: .05em; color: var(--accent); }
+  .foglio-testa small { display: block; margin-top: 8px; font-size: 12px; opacity: .92; }
+  .tabella { display: grid; grid-template-columns: 92px 1fr 1fr; }
+  .tabella > div { border-bottom: 1px solid var(--line); }
+  .tabella .col-t { padding: 9px 8px; text-align: center; font-weight: 800; font-size: 12.5px; background: color-mix(in srgb, var(--brand) 12%, var(--card)); }
+  .tabella .g { padding: 10px 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; text-align: center; }
+  .tabella .c { position: relative; min-height: 62px; padding: 10px 34px 10px 12px; border-left: 1px solid var(--line); font-size: 13.5px; line-height: 1.5; }
+  .tabella .c .nome { display: inline-block; margin-right: 8px; font-weight: 600; }
+  .tabella .c .nome.tu { color: var(--brand); font-weight: 800; }
+  .tabella .c .mute { color: var(--muted); font-weight: 500; }
+  .tabella .c .n { position: absolute; top: 8px; right: 9px; font-size: 11px; font-weight: 700; color: var(--muted); }
+  .tabella .c.strao { background: color-mix(in srgb, #e5383b 16%, transparent); }
+  .tabella .c.strao .n { color: #e5383b; }
+  .foglio-piede { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 10px 16px; font-size: 12px; color: var(--muted); }
+  .foglio-piede i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #e5383b; margin-right: 6px; }
+
+  /* Guida all'installazione (iPhone, iPad, Safari su Mac) */
+  #guida { position: fixed; inset: 0; z-index: 25; display: none; align-items: flex-end; justify-content: center; background: rgba(0,0,0,.55); }
+  #guida.aperta { display: flex; animation: sfondo .25s ease both; }
+  .guida-foglio { width: 100%; max-width: 520px; background: var(--card); color: var(--ink); border-radius: 24px 24px 0 0; padding: 22px 20px calc(22px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -10px 40px rgba(0,0,0,.35); animation: sale .45s cubic-bezier(.16, 1, .3, 1) both; }
+  .guida-foglio h2 { margin: 0 0 4px; font-size: 20px; font-weight: 800; letter-spacing: -.01em; }
+  .guida-foglio .sotto { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+  .guida-foglio ol { margin: 0; padding: 0; list-style: none; counter-reset: passo; display: grid; gap: 12px; }
+  .guida-foglio li { counter-increment: passo; display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: start; font-size: 15px; }
+  .guida-foglio li::before { content: counter(passo); width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--sel-a); color: #fff; font-weight: 800; font-size: 14px; }
+  .guida-foglio li svg { width: 20px; height: 20px; vertical-align: -4px; color: var(--brand); }
+  .guida-foglio .nota { margin: 14px 0 0; font-size: 13px; color: var(--muted); }
+  .guida-foglio button { margin-top: 18px; width: 100%; height: 50px; border: 0; border-radius: 14px; background: var(--sel); color: #fff; font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; }
+  @keyframes sfondo { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes sale { from { transform: translateY(100%); } to { transform: none; } }
+
+  /* Testata a scomparsa + tab */
+  .testata { position: sticky; top: 0; z-index: 12; transition: transform .38s cubic-bezier(.16, 1, .3, 1); }
+  .testata.nascosta { transform: translateY(calc(-1 * (var(--h-header, 180px) - env(safe-area-inset-top, 0px)))); }
+  .tabs { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 8px 16px; background: color-mix(in srgb, var(--bg) 86%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
+  .tab-ind { position: absolute; top: 8px; bottom: 8px; left: 16px; width: calc((100% - 32px) / 2); border-radius: 14px; background: var(--sel); box-shadow: 0 6px 16px color-mix(in srgb, var(--brand) 32%, transparent); transition: transform .42s cubic-bezier(.16, 1, .3, 1); }
+  .tabs[data-attiva="avvisi"] .tab-ind { transform: translateX(100%); }
+  .tab { position: relative; z-index: 1; height: 44px; border: 0; border-radius: 14px; background: none; color: var(--muted); font: inherit; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: color .25s; }
+  .tab svg { width: 18px; height: 18px; }
+  .tab[aria-selected="true"] { color: #fff; }
+  .badge { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: #e5383b; color: #fff; font-size: 11.5px; font-weight: 800; display: inline-grid; place-items: center; }
+  .badge[hidden] { display: none; }
+  main[hidden], .bar[hidden], #fab[hidden] { display: none; }
+  .entra-tab { animation: tabIn .4s cubic-bezier(.16, 1, .3, 1) both; }
+  @keyframes tabIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  /* Bacheca avvisi */
+  #pannello-avvisi { padding-bottom: 140px; }
+  .avvisi { display: grid; gap: 12px; }
+  .avviso { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 14px 14px 16px; box-shadow: var(--shadow); }
+  .avviso.anima { animation: compare .55s cubic-bezier(.16, 1, .3, 1) both; }
+  .avviso.nuovo { border-color: color-mix(in srgb, var(--accent) 75%, var(--line)); }
+  @keyframes compare { from { opacity: 0; transform: translateY(-10px) scale(.97); } to { opacity: 1; transform: none; } }
+  .av-testa { display: flex; align-items: center; gap: 10px; }
+  .av-iniz { flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 16px; }
+  .av-chi { min-width: 0; flex: 1; line-height: 1.3; }
+  .av-chi strong { display: block; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .av-chi span { font-size: 12.5px; color: var(--muted); }
+  .av-chi .nuovo-pill { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--accent); color: #4a3b00; font-size: 11px; font-weight: 800; }
+  .av-az { flex: none; display: flex; gap: 2px; }
+  .mini { min-width: 38px; height: 38px; padding: 0; border: 0; border-radius: 12px; background: none; color: var(--muted); display: grid; place-items: center; cursor: pointer; font: inherit; transition: background .15s, color .15s; }
+  .mini:hover { background: color-mix(in srgb, var(--muted) 16%, transparent); color: var(--ink); }
+  .mini svg { width: 19px; height: 19px; }
+  .mini.conferma { padding: 0 12px; background: #e5383b; color: #fff; font-weight: 800; font-size: 13px; }
+  .av-titolo { margin: 12px 0 0; font-size: 17px; font-weight: 800; letter-spacing: -.01em; overflow-wrap: anywhere; }
+  .av-testo { margin: 10px 0 0; font-size: 15.5px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .av-testo a { color: var(--brand); font-weight: 600; }
+  .vuoto { text-align: center; padding: 48px 20px; color: var(--muted); }
+  .vuoto svg { width: 54px; height: 54px; color: var(--brand); opacity: .85; }
+  .vuoto strong { display: block; margin-top: 10px; color: var(--ink); font-size: 17px; }
+  .vuoto p { margin: 6px 0 0; font-size: 14px; }
+  .vuoto button { margin-top: 14px; height: 44px; padding: 0 20px; border: 0; border-radius: 12px; background: var(--sel); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+  .sk-card { height: 120px; border-radius: 20px; border: 1px solid var(--line); background: linear-gradient(90deg, var(--card) 25%, color-mix(in srgb, var(--line) 50%, var(--card)) 50%, var(--card) 75%); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; }
+
+  /* Pulsante "Scrivi" sempre presente sopra il contenuto */
+  #fab { position: fixed; z-index: 6; right: max(16px, calc(50% - 244px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); height: 56px; padding: 0 22px 0 18px; border: 0; border-radius: 18px; display: inline-flex; align-items: center; gap: 10px; background: var(--sel); color: #fff; font: inherit; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 10px 26px color-mix(in srgb, var(--brand) 45%, transparent), 0 2px 6px rgba(0,0,0,.25); animation: fabIn .5s cubic-bezier(.34, 1.56, .64, 1) backwards; }
+  #fab:active { transform: scale(.95); }
+  #fab svg { width: 22px; height: 22px; }
+  @keyframes fabIn { from { opacity: 0; transform: translateY(20px) scale(.7); } to { opacity: 1; transform: none; } }
+
+  /* Bottom sheet per scrivere o modificare un avviso */
+  #scrivi, #pin, #richiesta, #sposta { position: fixed; inset: 0; z-index: 26; display: none; align-items: flex-end; justify-content: center; background: rgba(0,0,0,.55); }
+  #scrivi.aperta, #pin.aperta, #richiesta.aperta, #sposta.aperta { display: flex; animation: sfondo .25s ease both; }
+  #scrivi.chiude, #pin.chiude, #richiesta.chiude, #sposta.chiude { animation: sfondoOut .23s ease both; }
+  .sh-foglio { width: 100%; max-width: 520px; max-height: calc(100% - 20px - var(--kb, 0px)); margin-bottom: var(--kb, 0px); overflow-y: auto; overscroll-behavior: none; background: var(--card); color: var(--ink); border-radius: 26px 26px 0 0; padding: 0 20px calc(18px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -10px 40px rgba(0,0,0,.35); animation: sale .45s cubic-bezier(.16, 1, .3, 1) backwards; }
+  #scrivi.chiude .sh-foglio, #pin.chiude .sh-foglio, #richiesta.chiude .sh-foglio, #sposta.chiude .sh-foglio { animation: scende .23s cubic-bezier(.4, 0, 1, 1) both; }
+  .sh-maniglia { display: grid; place-items: center; height: 30px; margin: 0 -20px; touch-action: none; cursor: grab; }
+  .sh-maniglia span { width: 42px; height: 5px; border-radius: 3px; background: var(--line); }
+  .sh-foglio h2 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -.01em; }
+  .sh-campo { display: grid; gap: 6px; margin-top: 14px; font-size: 13px; font-weight: 700; color: var(--muted); }
+  .sh-campo em { font-style: normal; font-weight: 500; }
+  .sh-campo input, .sh-campo textarea { width: 100%; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 14px; background: var(--bg); color: var(--ink); font: inherit; font-size: 16px; font-weight: 500; resize: none; }
+  .sh-campo textarea { min-height: 112px; line-height: 1.5; }
+  .sh-campo input:focus, .sh-campo textarea:focus { outline: 3px solid color-mix(in srgb, var(--brand) 40%, transparent); border-color: var(--brand); }
+  .sh-campo small { justify-self: end; font-weight: 600; font-size: 12px; }
+  .sh-campo small.limite { color: var(--err); }
+  .sh-errore { min-height: 20px; margin: 10px 0 0; color: var(--err); font-size: 14px; font-weight: 600; }
+  .sh-azioni { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin-top: 8px; }
+  .sh-azioni button { height: 52px; border: 0; border-radius: 15px; font: inherit; font-weight: 800; font-size: 16px; cursor: pointer; }
+  .sh-azioni .sec { background: color-mix(in srgb, var(--muted) 18%, transparent); color: var(--ink); }
+  .sh-azioni .pieno { background: var(--sel); color: #fff; }
+  .sh-azioni button:disabled { opacity: .55; cursor: wait; }
+  @keyframes scende { to { transform: translateY(100%); } }
+  @keyframes sfondoOut { to { opacity: 0; } }
+
+  /* Stato di blocco dei turni */
+  .stato { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 18px; border: 1.5px solid var(--line); background: var(--card); transition: background .3s, border-color .3s; }
+  .stato[hidden] { display: none; }
+  .stato.aperto { background: color-mix(in srgb, var(--ok) 12%, var(--card)); border-color: color-mix(in srgb, var(--ok) 50%, var(--line)); }
+  .stato.bloccato { background: color-mix(in srgb, var(--err) 13%, var(--card)); border-color: color-mix(in srgb, var(--err) 55%, var(--line)); }
+  .stato-ico { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; color: #fff; }
+  .stato.aperto .stato-ico { background: #12805c; }
+  .stato.bloccato .stato-ico { background: #c62828; }
+  .stato-ico svg { width: 21px; height: 21px; }
+  .stato-testo { min-width: 0; flex: 1; line-height: 1.3; }
+  .stato-testo strong { display: block; font-size: 16px; font-weight: 800; }
+  .stato.aperto .stato-testo strong { color: var(--ok); }
+  .stato.bloccato .stato-testo strong { color: var(--err); }
+  .stato-testo span { font-size: 13px; color: var(--muted); }
+  .stato-btn { flex: none; height: 40px; padding: 0 14px; border: 0; border-radius: 12px; background: color-mix(in srgb, var(--ink) 10%, transparent); color: var(--ink); font: inherit; font-weight: 800; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .stato-btn:active { transform: scale(.96); }
+  .stato-btn svg { width: 16px; height: 16px; }
+  .tab-lock { display: inline-flex; }
+  .tab-lock[hidden] { display: none; }
+  .tab-lock svg { width: 15px; height: 15px; }
+  .pill svg { width: 14px; height: 14px; vertical-align: -2px; margin-right: 5px; }
+  .pill.bloccata { background: rgba(160,20,30,.72); border-color: rgba(255,255,255,.5); }
+  .slot .luc { position: absolute; top: 10px; right: 10px; width: 20px; height: 20px; display: none; color: var(--muted); }
+  .slot .luc svg { width: 100%; height: 100%; }
+  .giorni.bloccati .slot .luc { display: block; }
+  .giorni.bloccati .slot[aria-pressed="true"] .luc { color: #fff; }
+  .giorni.bloccati .slot .tick { display: none; }
+  .giorni.bloccati .slot:disabled:not([aria-pressed="true"]) { background: var(--card); }
+  .slot[aria-pressed="true"]:disabled { background: var(--sel); color: #fff; cursor: default; }
+  .slot[aria-pressed="true"]:disabled .ico { color: #fff; }
+  .sh-info { margin: 6px 0 0; font-size: 14px; line-height: 1.45; color: var(--muted); }
+  #pin-campo, #sp-pin { letter-spacing: .35em; font-weight: 800; text-align: center; }
+
+  /* Turni bloccati: settimana leggibile e richieste */
+  .stato { flex-wrap: wrap; }
+  .stato-rich { flex: 1 1 100%; height: 46px; border: 0; border-radius: 14px; background: var(--sel); color: #fff; font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+  .stato-rich[hidden] { display: none; }
+  .stato-rich:active { transform: scale(.98); }
+  .stato-rich svg { width: 18px; height: 18px; }
+  .nascosto-b { display: none !important; }
+  .settimana { display: grid; gap: 12px; margin-top: 14px; }
+  .sg { border: 1.5px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--card); }
+  .sg.oggi { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 28%, transparent); }
+  .sg-g { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: color-mix(in srgb, var(--brand) 12%, var(--card)); font-size: 16px; }
+  .oggi-pill { padding: 1px 9px; border-radius: 999px; background: var(--accent); color: #4a3b00; font-size: 11.5px; font-weight: 800; }
+  .sg-t { display: grid; grid-template-columns: 1fr 1fr; }
+  .sg-c { padding: 12px 14px 14px; }
+  .sg-c + .sg-c { border-left: 1px solid var(--line); }
+  .sg-c.strao { background: color-mix(in srgb, #e5383b 14%, transparent); }
+  .sg-e { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; color: var(--muted); }
+  .sg-e i { margin-left: auto; font-style: normal; font-size: 12px; font-weight: 700; }
+  .sg-c.strao .sg-e i { color: #e5383b; }
+  .sg-ico { width: 18px; height: 18px; color: var(--brand); display: inline-flex; }
+  .sg-ico svg { width: 100%; height: 100%; }
+  .sg-n { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .sg-nome { padding: 5px 11px; border-radius: 999px; background: color-mix(in srgb, var(--brand) 16%, var(--card)); color: var(--ink); font-weight: 700; font-size: 15px; }
+  .sg-nome.rich { outline: 2px solid #f59e0b; outline-offset: -1px; }
+  .sg-nome.rich::after { content: " !"; color: #f59e0b; font-weight: 800; }
+  .sg-vuoto { color: var(--muted); font-size: 14px; }
+  .richieste { display: grid; gap: 10px; margin-top: 14px; }
+  .ric { border: 1.5px solid var(--line); border-left: 5px solid #f59e0b; border-radius: 16px; padding: 12px 12px 12px 14px; background: var(--card); }
+  .ric.gestita { border-left-color: #12805c; opacity: .85; }
+  .ric-testa { display: flex; align-items: flex-start; gap: 8px; }
+  .ric-frase { flex: 1; margin: 0; font-size: 15.5px; line-height: 1.4; overflow-wrap: anywhere; }
+  .ric-meta { margin-top: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 12.5px; color: var(--muted); }
+  .ric-stato { padding: 1px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 800; color: var(--ink); }
+  .ric-stato.aperta { background: color-mix(in srgb, #f59e0b 30%, var(--card)); }
+  .ric-stato.ok { background: color-mix(in srgb, #12805c 28%, var(--card)); }
+  .ric-nota { margin: 6px 0 0; font-size: 14px; font-style: italic; color: var(--muted); overflow-wrap: anywhere; }
+  .ric-det { margin: 6px 0 0; font-size: 13.5px; }
+  .ric-vuoto { margin: 0; font-size: 14px; color: var(--muted); }
+  .ric-sposta { height: 36px; padding: 0 12px; border: 0; border-radius: 11px; background: var(--sel); color: #fff; font: inherit; font-weight: 800; font-size: 13.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .ric-sposta svg { width: 16px; height: 16px; }
+  #ric-conta { padding: 2px 10px; border-radius: 999px; background: color-mix(in srgb, #f59e0b 30%, var(--card)); font-size: 12.5px; font-weight: 800; white-space: nowrap; }
+  #ric-conta:empty { display: none; }
+  .rq-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .rq-giorni { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .rq-tipo { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .opz { min-height: 44px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 14px; background: var(--card); color: var(--ink); font: inherit; font-weight: 700; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: background .15s, border-color .15s; }
+  .opz:active { transform: scale(.96); }
+  .opz[aria-pressed="true"] { background: var(--sel); color: #fff; border-color: transparent; }
+  .opz .pt { display: none; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+  .opz.ha .pt { display: inline-block; }
+  .opz[aria-pressed="true"] .pt { background: #fff; }
+  .sp-griglia { display: grid; gap: 8px; margin-top: 12px; }
+  .sp-riga { display: grid; grid-template-columns: 52px 1fr 1fr; gap: 8px; align-items: center; }
+  .sp-g { font-weight: 800; font-size: 14px; }
+  .sp-riga.richiesto .sp-g { color: #f59e0b; }
+  .sp-riga.richiesto .sp-g::after { content: " !"; }
+  .sp-t { height: 40px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); font: inherit; font-weight: 700; font-size: 13.5px; cursor: pointer; }
+  .sp-t.on { background: var(--sel); color: #fff; border-color: transparent; }
+  .sp-t.pieno:not(.on) { border-color: #f59e0b; background: color-mix(in srgb, #f59e0b 14%, var(--card)); }
+  .sp-t:disabled { opacity: .4; cursor: not-allowed; }
+  .sp-riepilogo { margin: 10px 0 0; min-height: 20px; font-size: 13.5px; line-height: 1.45; }
 
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   .chip:focus-visible, .slot:focus-visible, #invia:focus-visible { outline-color: var(--brand); outline-offset: 3px; }
@@ -167,21 +397,60 @@
 </style>
 </head>
 <body>
-<div class="app">
+<div class="app" id="app">
+  <div class="testata" id="testata">
   <header class="top">
-    <div class="marchio">
-      <img src="misericordialogo3.png" alt="" onerror="this.remove();document.getElementById('emblema').style.display='block'">
-      <svg id="emblema" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z" fill="#d62828"/></svg>
+    <div class="barra">
+      <span class="pill" id="pill">Scegli i tuoi turni</span>
+      <div class="azioni">
+        <button type="button" class="icona" id="installa" hidden aria-label="Installa l'app" title="Installa l'app">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>
+        </button>
+        <button type="button" class="icona" id="apri-vista" aria-label="Vista completa dei turni" title="Vista completa dei turni">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>
+        </button>
+        <button type="button" class="icona" id="tema" aria-label="Passa al tema chiaro" title="Cambia tema">
+          <svg class="sole" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="luna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+      </div>
     </div>
-    <div class="titoli">
-      <h1>Turni Servizio Civile</h1>
-      <p class="org">Misericordia di Marineo</p>
-      <span class="pill">Scegli i tuoi turni</span>
+    <div class="brand">
+      <div class="marchio">
+        <img src="misericordialogo3.png" alt="Misericordia di Marineo" onerror="this.remove();document.getElementById('emblema').style.display='block'">
+        <svg id="emblema" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z" fill="#d62828" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="titoli">
+        <h1>Turni Servizio Civile</h1>
+        <p class="org">Misericordia di Marineo</p>
+      </div>
     </div>
   </header>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Sezioni" data-attiva="turni">
+    <span class="tab-ind" aria-hidden="true"></span>
+    <button type="button" class="tab" role="tab" id="tab-turni" aria-selected="true" aria-controls="pannello-turni" data-tab="turni">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+      Turni <span class="tab-lock" id="tab-lock" hidden aria-hidden="true"></span>
+    </button>
+    <button type="button" class="tab" role="tab" id="tab-avvisi" aria-selected="false" aria-controls="pannello-avvisi" tabindex="-1" data-tab="avvisi">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+      Avvisi <span class="badge" id="badge-avvisi" hidden>0</span>
+    </button>
+  </nav>
+  </div>
 
-  <main>
-    <div class="demo" id="demo" hidden>Modalità demo: i dati sono di prova e non vengono salvati. Imposta URL_SCRIPT per collegare il Google Sheet.</div>
+  <main id="pannello-turni" role="tabpanel" aria-labelledby="tab-turni">
+    <div class="demo" id="demo" hidden>Modalità demo: i dati sono di prova e non vengono salvati. PIN di prova: 1234. Imposta URL_SCRIPT per collegare il Google Sheet.</div>
+
+    <section class="stato aperto" id="stato-blocco" hidden aria-live="polite">
+      <span class="stato-ico" id="stato-ico" aria-hidden="true"></span>
+      <div class="stato-testo"><strong id="stato-titolo">Turni sbloccati</strong><span id="stato-sotto"></span></div>
+      <button type="button" class="stato-btn" id="stato-btn">Blocca</button>
+      <button type="button" class="stato-rich" id="stato-rich" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h14M14 3l4 4-4 4M20 17H6M10 13l-4 4 4 4"/></svg>
+        Richiedi Spostamento/Permesso
+      </button>
+    </section>
 
     <section class="card" id="errore" role="alert">
       <h2>Non riesco a caricare i turni</h2>
@@ -213,9 +482,25 @@
     </section>
 
     <section class="card promemoria rivela" id="legenda"></section>
+
+    <section class="card" id="sez-settimana" hidden aria-labelledby="t-sett">
+      <div class="head"><h2 id="t-sett">Turni della settimana</h2><span id="agg2" hidden></span></div>
+      <p class="sub">I turni sono bloccati: questo è il programma. Chi ha una richiesta in attesa ha il contorno arancione.</p>
+      <div class="settimana" id="settimana"></div>
+    </section>
+
+    <section class="card" id="sez-richieste" hidden aria-labelledby="t-ric">
+      <div class="head"><h2 id="t-ric">Richieste di variazione</h2><span id="ric-conta"></span></div>
+      <p class="sub">Spostamenti e permessi chiesti dai volontari. Per spostare qualcuno serve il PIN.</p>
+      <div class="richieste" id="lista-richieste"></div>
+    </section>
   </main>
 
-  <div class="bar">
+  <main id="pannello-avvisi" role="tabpanel" aria-labelledby="tab-avvisi" hidden>
+    <div class="avvisi" id="lista-avvisi"></div>
+  </main>
+
+  <div class="bar" id="barra-turni">
     <div class="in">
       <div class="txt">
         <div class="t1" id="t1">Scegli il tuo nome</div>
@@ -224,15 +509,133 @@
       <button type="button" id="invia" disabled>Invia turni</button>
     </div>
   </div>
-  <div id="toast" role="status" aria-live="polite"></div>
 </div>
+
+<div id="vista" role="dialog" aria-modal="true" aria-labelledby="vista-titolo">
+  <div class="vista-in">
+    <div class="vista-barra">
+      <button type="button" class="tasto" id="vista-chiudi">Chiudi</button>
+      <span class="spazio"></span>
+      <button type="button" class="tasto" id="vista-copia">Copia testo</button>
+      <button type="button" class="tasto" id="vista-pulito">Screenshot</button>
+    </div>
+    <div class="foglio">
+      <div class="foglio-testa">
+        <h2 id="vista-titolo">Turni Servizio Civile</h2>
+        <p>Misericordia di Marineo</p>
+        <small id="vista-quando"></small>
+        <small id="vista-stato"></small>
+      </div>
+      <div class="tabella" id="tabella"></div>
+      <div class="foglio-piede">
+        <span><i class="r"></i>turno straordinario</span>
+        <span id="vista-leg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button type="button" id="fab" hidden aria-label="Scrivi un avviso">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+  Scrivi
+</button>
+
+<div id="scrivi" role="dialog" aria-modal="true" aria-labelledby="scrivi-titolo">
+  <div class="sh-foglio" id="sh-foglio">
+    <div class="sh-maniglia" id="sh-maniglia" aria-hidden="true"><span></span></div>
+    <h2 id="scrivi-titolo">Nuovo avviso</h2>
+    <label class="sh-campo"><span>Firma</span>
+      <input id="f-autore" type="text" maxlength="40" autocomplete="name" autocapitalize="words" enterkeyhint="next">
+    </label>
+    <label class="sh-campo"><span>Titolo <em>(facoltativo)</em></span>
+      <input id="f-titolo" type="text" maxlength="80" enterkeyhint="next">
+    </label>
+    <label class="sh-campo"><span>Avviso</span>
+      <textarea id="f-testo" rows="4" maxlength="1000" placeholder="Scrivi qui il tuo avviso…"></textarea>
+      <small id="f-conta">0/1000</small>
+    </label>
+    <p class="sh-errore" id="sh-errore" role="alert"></p>
+    <div class="sh-azioni">
+      <button type="button" class="sec" id="sh-annulla">Annulla</button>
+      <button type="button" class="pieno" id="sh-invia">Pubblica</button>
+    </div>
+  </div>
+</div>
+
+<div id="pin" role="dialog" aria-modal="true" aria-labelledby="pin-titolo">
+  <div class="sh-foglio" id="pin-foglio">
+    <div class="sh-maniglia" id="pin-maniglia" aria-hidden="true"><span></span></div>
+    <h2 id="pin-titolo">Blocca i turni</h2>
+    <p class="sh-info" id="pin-info"></p>
+    <label class="sh-campo"><span>PIN</span>
+      <input id="pin-campo" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off" enterkeyhint="done" aria-describedby="pin-errore">
+    </label>
+    <p class="sh-errore" id="pin-errore" role="alert"></p>
+    <div class="sh-azioni">
+      <button type="button" class="sec" id="pin-annulla">Annulla</button>
+      <button type="button" class="pieno" id="pin-conferma">Blocca</button>
+    </div>
+  </div>
+</div>
+
+<div id="richiesta" role="dialog" aria-modal="true" aria-labelledby="rq-titolo">
+  <div class="sh-foglio" id="rq-foglio">
+    <div class="sh-maniglia" id="rq-maniglia" aria-hidden="true"><span></span></div>
+    <h2 id="rq-titolo">Richiedi spostamento o permesso</h2>
+    <p class="sh-info">La richiesta resta visibile a tutti sotto i turni finché il coordinatore non la gestisce.</p>
+    <div class="sh-campo"><span>Chi sei?</span><div class="rq-chips" id="rq-chi" role="group" aria-label="Volontario"></div></div>
+    <div class="sh-campo"><span>Per quale giorno? <em>(il pallino verde indica che hai un turno)</em></span><div class="rq-giorni" id="rq-giorno" role="group" aria-label="Giorno"></div></div>
+    <div class="sh-campo"><span>Di cosa hai bisogno?</span>
+      <div class="rq-tipo" id="rq-tipo" role="group" aria-label="Tipo di richiesta">
+        <button type="button" class="opz" data-t="Spostamento" aria-pressed="true">Spostamento</button>
+        <button type="button" class="opz" data-t="Permesso" aria-pressed="false">Permesso</button>
+      </div>
+    </div>
+    <label class="sh-campo"><span>Motivo <em>(facoltativo)</em></span><input id="rq-nota" type="text" maxlength="120" enterkeyhint="done"></label>
+    <p class="sh-errore" id="rq-errore" role="alert"></p>
+    <div class="sh-azioni">
+      <button type="button" class="sec" id="rq-annulla">Annulla</button>
+      <button type="button" class="pieno" id="rq-invia">Invia richiesta</button>
+    </div>
+  </div>
+</div>
+
+<div id="sposta" role="dialog" aria-modal="true" aria-labelledby="sp-titolo">
+  <div class="sh-foglio" id="sp-foglio">
+    <div class="sh-maniglia" id="sp-maniglia" aria-hidden="true"><span></span></div>
+    <h2 id="sp-titolo">Sposta</h2>
+    <p class="sh-info" id="sp-info"></p>
+    <div class="sp-griglia" id="sp-griglia"></div>
+    <p class="sp-riepilogo" id="sp-riepilogo" aria-live="polite"></p>
+    <label class="sh-campo"><span>PIN</span>
+      <input id="sp-pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off" enterkeyhint="done" aria-describedby="sp-errore">
+    </label>
+    <p class="sh-errore" id="sp-errore" role="alert"></p>
+    <div class="sh-azioni">
+      <button type="button" class="sec" id="sp-annulla">Annulla</button>
+      <button type="button" class="pieno" id="sp-conferma">Chiudi richiesta</button>
+    </div>
+  </div>
+</div>
+
+<div id="guida" role="dialog" aria-modal="true" aria-labelledby="guida-titolo">
+  <div class="guida-foglio">
+    <h2 id="guida-titolo">Installa l'app</h2>
+    <p class="sotto" id="guida-sotto"></p>
+    <ol id="guida-passi"></ol>
+    <p class="nota" id="guida-nota"></p>
+    <button type="button" id="guida-chiudi">Ho capito</button>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script>
 "use strict";
 // ================= CONFIGURAZIONE =================
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbyVMMcLLAaol0tvtMpiTwzKh7b3xdjA1gjBGd8dj2gkuhvPlwlrjHMFskU1JCoseD4S/exec";
+const URL_SCRIPT = "INCOLLA_QUI_URL_WEB_APP_APPS_SCRIPT";
 const GIORNI = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
-const POLL_MS = 10000; // ogni quanto aggiornare i posti liberi
+const POLL_MS = 15000; // ogni quanto aggiornare i posti liberi
 // Capienza, volontari e turni non disponibili si impostano in Code.gs
 // ==================================================
 
@@ -254,7 +657,23 @@ const S = {
   nonDisp: [],
   slot: {},           // "0-M" -> [nomi]
   saved: new Set(),   // turni già salvati sul foglio
-  sel: new Set()      // selezione corrente
+  sel: new Set(),     // selezione corrente
+  tab: "turni",       // sezione aperta: turni | avvisi
+  avvisi: null,       // lista avvisi (null = non ancora caricata)
+  avvisiFirma: "",    // per accorgersi se la lista è cambiata
+  idRend: new Set(),  // avvisi già disegnati (per animare solo i nuovi)
+  disegnati: false,
+  propri: new Set(),  // avvisi scritti da me in questa sessione
+  visteFino: 0,       // data oltre la quale un avviso è "nuovo"
+  confermaId: null,   // avviso con il cestino in attesa di conferma
+  modificaId: null,   // avviso in modifica nel cassetto
+  salvando: false,
+  errore: false,      // caricamento iniziale fallito
+  bloccati: false,    // turni bloccati con il PIN
+  bloccoQuando: "",   // da quando
+  richieste: null,    // richieste di variazione (null = non ancora caricate)
+  richiesteFirma: "",
+  confermaRichId: null
 };
 
 // ---------- utilità ----------
@@ -316,18 +735,77 @@ function demoComponi(nome) {
   const slot = {};
   for (let d = 0; d < 7; d++) ["M", "P"].forEach((t) => { slot[d + "-" + t] = []; });
   Object.keys(demoDB).forEach((n) => demoDB[n].forEach((k) => slot[k].push(n)));
-  return { ok: true, capacita: 4, nonDisponibili: [], slot,
+  return { ok: true, capacita: 4, nonDisponibili: [], slot, avvisi: demoLista(), bloccati: demoBloccoStato.bloccati, bloccoQuando: demoBloccoStato.quando, richieste: demoListaRich(),
     volontari: DEMO_VOL.map((n) => ({ nome: n, inviato: !!demoDB[n] })),
     miei: nome && demoDB[nome] ? demoDB[nome].slice() : [] };
 }
 const demoStato = (nome) => new Promise((res) => setTimeout(() => res(demoComponi(nome)), 500));
 const demoPost = (nome, turni) => new Promise((res) => setTimeout(() => {
   const st = demoComponi(nome);
+  if (demoBloccoStato.bloccati) return res(Object.assign(st, { ok: false, errore: "I turni sono bloccati: non si possono più modificare." }));
   const conf = turni.filter((k) => !st.slot[k].includes(nome) && st.slot[k].length >= 4);
   if (conf.length) return res(Object.assign(st, { ok: false, conflitti: conf, errore: "Alcuni turni sono stati appena presi da altri." }));
   if (turni.length) demoDB[nome] = turni.slice(); else delete demoDB[nome];
   res(demoComponi(nome));
 }, 600));
+
+// Avvisi di prova per la modalità demo
+const demoAvvisiDB = [
+  { id: "d1", creato: new Date(Date.now() - 3 * 3600e3).toISOString(), autore: "Valenti", titolo: "Cambio orario", testo: "Domani il turno del mattino inizia alle 8:30 invece che alle 8:00.", modificato: "" },
+  { id: "d2", creato: new Date(Date.now() - 26 * 3600e3).toISOString(), autore: "Spinella", titolo: "", testo: "Chi può porti le chiavi del magazzino sabato.\nGrazie!", modificato: "" }
+];
+const demoLista = () => demoAvvisiDB.slice().sort((a, b) => b.creato.localeCompare(a.creato));
+const demoAvviso = (c) => new Promise((res, rej) => setTimeout(() => {
+  if (c.azione === "avviso_crea") {
+    const a = { id: "d" + Date.now(), creato: new Date().toISOString(), autore: c.autore, titolo: c.titolo, testo: c.testo, modificato: "" };
+    demoAvvisiDB.push(a);
+    return res({ ok: true, id: a.id, avvisi: demoLista() });
+  }
+  const i = demoAvvisiDB.findIndex((x) => x.id === c.id);
+  if (i < 0) return rej(new Error("Questo avviso non esiste più."));
+  if (c.azione === "avviso_modifica") Object.assign(demoAvvisiDB[i], { autore: c.autore, titolo: c.titolo, testo: c.testo, modificato: new Date().toISOString() });
+  else demoAvvisiDB.splice(i, 1);
+  res({ ok: true, avvisi: demoLista() });
+}, 450));
+
+// Blocco turni di prova (modalità demo): PIN 1234
+const demoBloccoStato = { bloccati: false, quando: "" };
+const demoBlocco = (azione, pin) => new Promise((res, rej) => setTimeout(() => {
+  if (pin !== "1234") return rej(new Error("PIN non corretto."));
+  demoBloccoStato.bloccati = azione === "turni_blocca";
+  demoBloccoStato.quando = demoBloccoStato.bloccati ? new Date().toISOString() : "";
+  res({ ok: true, bloccati: demoBloccoStato.bloccati, bloccoQuando: demoBloccoStato.quando });
+}, 450));
+
+// Richieste di prova (modalità demo)
+const demoRichDB = [
+  { id: "r1", creato: new Date(Date.now() - 2 * 3600e3).toISOString(), volontario: "VALENTI", giorno: 2, tipo: "Spostamento", nota: "Visita medica al mattino", stato: "aperta", gestita: "", dettaglio: "" },
+  { id: "r2", creato: new Date(Date.now() - 20 * 3600e3).toISOString(), volontario: "OLIVERI", giorno: 4, tipo: "Permesso", nota: "", stato: "gestita", gestita: new Date().toISOString(), dettaglio: "Nessuna modifica ai turni." }
+];
+const demoListaRich = () => demoRichDB.slice().sort((a, b) => (a.stato === b.stato ? b.creato.localeCompare(a.creato) : (a.stato === "aperta" ? -1 : 1)));
+const demoRichiesta = (c) => new Promise((res, rej) => setTimeout(() => {
+  if (c.azione === "richiesta_crea") {
+    if (demoRichDB.some((r) => r.stato === "aperta" && r.volontario === c.volontario && r.giorno === c.giorno && r.tipo === c.tipo)) return rej(new Error("Hai già inviato questa richiesta: è in attesa di essere gestita."));
+    demoRichDB.push({ id: "r" + Date.now(), creato: new Date().toISOString(), volontario: c.volontario, giorno: c.giorno, tipo: c.tipo, nota: c.nota || "", stato: "aperta", gestita: "", dettaglio: "" });
+    return res({ ok: true, richieste: demoListaRich() });
+  }
+  const i = demoRichDB.findIndex((r) => r.id === c.id);
+  if (i < 0) return rej(new Error("Questa richiesta non esiste più."));
+  if (c.azione === "richiesta_elimina") { demoRichDB.splice(i, 1); return res({ ok: true, richieste: demoListaRich() }); }
+  if (c.pin !== "1234") return rej(new Error("PIN non corretto."));
+  const r = demoRichDB[i];
+  const vecchi = demoDB[r.volontario] || [];
+  const nuovi = c.turni || [];
+  const tolti = vecchi.filter((k) => !nuovi.includes(k));
+  const aggiunti = nuovi.filter((k) => !vecchi.includes(k));
+  if (tolti.length || aggiunti.length) { if (nuovi.length) demoDB[r.volontario] = nuovi.slice(); else delete demoDB[r.volontario]; }
+  const nome = (k) => { const q = k.split("-"); return GIORNI[+q[0]].slice(0, 3) + (q[1] === "M" ? " mattina" : " pomeriggio"); };
+  const parti = [];
+  if (tolti.length) parti.push("Tolto: " + tolti.map(nome).join(", "));
+  if (aggiunti.length) parti.push("Aggiunto: " + aggiunti.map(nome).join(", "));
+  Object.assign(r, { stato: "gestita", gestita: new Date().toISOString(), dettaglio: parti.length ? parti.join(". ") + "." : "Nessuna modifica ai turni." });
+  res({ ok: true, richieste: demoListaRich() });
+}, 450));
 
 // ---------- stato ----------
 function info(k) {
@@ -340,17 +818,32 @@ function info(k) {
 
 function applica(st, reset) {
   const eraSporco = sporco();
+  const primo = !S.pronto;
+  const eraBloccato = S.bloccati;
   S.cap = st.capacita;
   S.nonDisp = st.nonDisponibili || [];
   S.slot = st.slot || {};
+  S.bloccati = !!st.bloccati;
+  S.bloccoQuando = st.bloccoQuando || "";
   S.volontari = st.volontari || [];
   S.saved = new Set(S.volontario ? st.miei || [] : []);
   if (reset || !eraSporco) S.sel = new Set(S.saved);
+  if (!primo && S.bloccati !== eraBloccato) {
+    if (!S.bloccati) toast("I turni sono stati sbloccati", "ok");
+    else if (sporco()) { S.sel = new Set(S.saved); toast("I turni sono stati bloccati: le modifiche non inviate sono annullate", "err"); }
+    else toast("I turni sono stati bloccati");
+  }
   S.pronto = true;
+  S.errore = false;
+  if (Array.isArray(st.avvisi)) impostaAvvisi(st.avvisi);
+  if (Array.isArray(st.richieste)) impostaRichieste(st.richieste);
   const ora = new Date();
+  S.aggiornato = ora;
   const agg = $("agg");
   agg.hidden = false;
   agg.textContent = "Aggiornato alle " + String(ora.getHours()).padStart(2, "0") + ":" + String(ora.getMinutes()).padStart(2, "0");
+  $("agg2").hidden = false;
+  $("agg2").textContent = agg.textContent;
 }
 
 // Toglie dalla selezione i turni nel frattempo presi da altri
@@ -405,7 +898,8 @@ function costruisciGiorni() {
       b.innerHTML = '<span class="tick" aria-hidden="true">' + SVG_TICK + '</span>' +
         '<span class="riga1"><span class="ico" aria-hidden="true">' + (t === "M" ? SVG_SOLE : SVG_TRAMONTO) + '</span>' +
         '<span>' + (t === "M" ? "Mattina" : "Pomeriggio") + '</span></span>' +
-        '<span class="dots" aria-hidden="true"></span><span class="st"></span><span class="nomi"></span>';
+        '<span class="dots" aria-hidden="true"></span><span class="st"></span><span class="nomi"></span>' +
+        '<span class="luc" aria-hidden="true">' + SVG_LUC_CHIUSO + '</span>';
       b.addEventListener("click", () => toggle(k));
       slotRefs[k] = { b, dots: b.querySelector(".dots"), st: b.querySelector(".st"), nomi: b.querySelector(".nomi") };
       riga.appendChild(b);
@@ -436,7 +930,7 @@ function disegnaSlot(k) {
   const occupato = S.caricando || S.invio || !S.pronto;
   const tuoSalvato = S.saved.has(k); // già tuo sul foglio: resta modificabile anche se straordinario
   r.b.setAttribute("aria-pressed", mio ? "true" : "false");
-  r.b.disabled = occupato || nd || (piena && !mio && !tuoSalvato);
+  r.b.disabled = occupato || S.bloccati || nd || (piena && !mio && !tuoSalvato);
   r.b.classList.toggle("locked", !S.volontario);
 
   let dots = "";
@@ -462,12 +956,14 @@ function disegnaSlot(k) {
 
 function disegnaGiorni() {
   $("giorni").classList.toggle("loading", S.caricando || !S.pronto);
+  $("giorni").classList.toggle("bloccati", S.bloccati);
   Object.keys(slotRefs).forEach(disegnaSlot);
 }
 
 function disegnaHint() {
   const h = $("hint");
-  if (!S.volontario) h.textContent = "Scegli prima il tuo nome per vedere i posti liberi.";
+  if (S.bloccati) h.textContent = S.volontario ? "Ciao " + titolo(S.volontario) + "! I turni sono bloccati: qui sotto vedi i tuoi, ma non si possono più modificare." : "I turni sono bloccati: puoi solo consultarli. Scegli il tuo nome per vedere i tuoi.";
+  else if (!S.volontario) h.textContent = "Scegli prima il tuo nome per vedere i posti liberi.";
   else h.textContent = "Ciao " + titolo(S.volontario) + "! Tocca i turni che vuoi fare: ogni turno ha " + S.cap + " posti.";
 }
 
@@ -486,6 +982,13 @@ function disegnaBar() {
   disegnaRiepilogo();
   const n = S.sel.size;
   const btn = $("invia");
+  if (S.bloccati) {
+    $("t1").textContent = "Turni bloccati";
+    $("t2").textContent = S.volontario && n ? [...S.sel].sort((a, b) => ordine(a) - ordine(b)).map(breve).join(", ") : "Non si possono più modificare";
+    btn.textContent = "Bloccati";
+    btn.disabled = true;
+    return;
+  }
   if (!S.volontario) {
     $("t1").textContent = "Scegli il tuo nome";
     $("t2").textContent = "";
@@ -499,10 +1002,11 @@ function disegnaBar() {
   btn.disabled = S.invio || S.caricando || !sporco();
 }
 
-function disegnaTutto() { disegnaChips(); disegnaGiorni(); disegnaHint(); disegnaBar(); }
+function disegnaTutto() { disegnaChips(); disegnaGiorni(); disegnaHint(); disegnaBar(); disegnaStato(); disegnaVistaBloccata(); disegnaVista(); }
 
 // ---------- azioni ----------
 function toggle(k) {
+  if (S.bloccati) { toast("I turni sono bloccati", "err"); return; }
   if (!S.volontario) {
     toast("Scegli prima il tuo nome", "err");
     const c = $("chips");
@@ -554,7 +1058,7 @@ async function scegli(nome) {
 }
 
 async function invia() {
-  if (!S.volontario || S.invio || !sporco()) return;
+  if (!S.volontario || S.invio || S.bloccati || !sporco()) return;
   const seq = ++S.seq;
   S.invio = true;
   disegnaTutto();
@@ -563,6 +1067,10 @@ async function invia() {
     if (r.ok) {
       applica(r, true);
       toast(S.sel.size ? "Turni salvati. Grazie " + titolo(S.volontario) + "!" : "Turni rimossi", "ok");
+    } else if (r.bloccati) {
+      // Nel frattempo i turni sono stati bloccati: il server non ha salvato nulla
+      applica(r, false);
+      toast(r.errore || "I turni sono bloccati.", "err");
     } else if (r.slot) {
       // Conflitto: qualcuno ha preso un turno mentre scegliavi. Il server ha rifiutato tutto.
       applica(r, false);
@@ -603,6 +1111,826 @@ async function avvia() {
   } catch (e) {
     $("errore-msg").textContent = e.message;
     $("errore").classList.add("show");
+    S.errore = true;
+    disegnaAvvisi();
+  }
+}
+
+// ---------- vista completa ----------
+const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const p2 = (n) => String(n).padStart(2, "0");
+const quando = (d) => p2(d.getDate()) + "/" + p2(d.getMonth() + 1) + "/" + d.getFullYear() + " alle " + p2(d.getHours()) + ":" + p2(d.getMinutes());
+const nomiTurno = (k) => (S.slot[k] || []).slice().sort((a, b) => a.localeCompare(b, "it"));
+let apertoDa = null;
+
+function disegnaVista() {
+  const vista = $("vista");
+  if (!vista.classList.contains("aperta")) return;
+  $("vista-quando").textContent = "Aggiornato il " + quando(S.aggiornato || new Date());
+  $("vista-leg").textContent = "n/" + S.cap + " = posti occupati";
+  $("vista-stato").textContent = S.bloccati ? "Turni bloccati" : "Turni sbloccati: si possono ancora modificare";
+  let h = '<div class="col-t"></div><div class="col-t">Mattina</div><div class="col-t">Pomeriggio</div>';
+  GIORNI.forEach((g, d) => {
+    h += '<div class="g">' + g + "</div>";
+    ["M", "P"].forEach((t) => {
+      const k = d + "-" + t;
+      const nomi = nomiTurno(k);
+      const chiuso = S.nonDisp.includes(k);
+      let corpo;
+      if (chiuso) corpo = '<span class="nome mute">Chiuso</span>';
+      else if (!nomi.length) corpo = '<span class="nome mute">—</span>';
+      else corpo = nomi.map((n) => '<span class="nome' + (n === S.volontario ? " tu" : "") + '">' + esc(titolo(n)) + "</span>").join("");
+      const badge = chiuso ? "" : '<span class="n">' + nomi.length + "/" + S.cap + "</span>";
+      h += '<div class="c' + (nomi.length > S.cap ? " strao" : "") + '">' + badge + corpo + "</div>";
+    });
+  });
+  $("tabella").innerHTML = h;
+}
+
+function apriVista() {
+  if (!S.pronto) { toast("Sto ancora caricando i turni…"); return; }
+  apertoDa = document.activeElement;
+  const vista = $("vista");
+  vista.classList.remove("pulita");
+  vista.classList.add("aperta");
+  vista.scrollTop = 0;
+  document.body.style.overflow = "hidden";
+  $("app").inert = true;
+  disegnaVista();
+  $("vista-chiudi").focus();
+  aggiorna(); // rilegge i posti: la vista si ridisegna da sola
+}
+
+function chiudiVista() {
+  $("vista").classList.remove("aperta", "pulita");
+  document.body.style.overflow = "";
+  $("app").inert = false;
+  if (apertoDa && apertoDa.focus) apertoDa.focus();
+}
+
+function testoCondiviso() {
+  const righe = ["*Turni Servizio Civile – Misericordia di Marineo*", "Aggiornato il " + quando(S.aggiornato || new Date()), S.bloccati ? "Turni bloccati" : "Turni ancora modificabili", ""];
+  GIORNI.forEach((g, d) => {
+    righe.push("*" + g + "*");
+    ["M", "P"].forEach((t) => {
+      const k = d + "-" + t;
+      const elenco = S.nonDisp.includes(k) ? "chiuso" : (nomiTurno(k).map(titolo).join(", ") || "—");
+      righe.push((t === "M" ? "Mattina" : "Pomeriggio") + ": " + elenco);
+    });
+    righe.push("");
+  });
+  return righe.join("\n").trim();
+}
+
+async function copiaTesto() {
+  const testo = testoCondiviso();
+  try {
+    await navigator.clipboard.writeText(testo);
+    toast("Testo copiato. Incollalo in chat.", "ok");
+  } catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = testo;
+    ta.style.cssText = "position:fixed;opacity:0;top:0;left:0";
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch (_) { /* niente */ }
+    ta.remove();
+    toast(ok ? "Testo copiato. Incollalo in chat." : "Copia non riuscita", ok ? "ok" : "err");
+  }
+}
+
+// ---------- tema ----------
+function impostaTema(t, salva) {
+  document.documentElement.dataset.tema = t;
+  $("tema").setAttribute("aria-label", t === "light" ? "Passa al tema scuro" : "Passa al tema chiaro");
+  if (salva) { try { localStorage.setItem("turni-tema", t); } catch (e) { /* tema non salvato */ } }
+}
+
+// ---------- installazione come app ----------
+const SVG_CONDIVIDI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 11H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>';
+const UA = navigator.userAgent;
+// iPadOS si presenta come "Macintosh" ma ha lo schermo touch
+const IN_IOS = /iPhone|iPad|iPod/.test(UA) || (/Macintosh/.test(UA) && navigator.maxTouchPoints > 1);
+const IN_MAC_SAFARI = !IN_IOS && /Macintosh/.test(UA) && /Safari/.test(UA) && !/Chrome|Chromium|Edg|OPR|Firefox|FxiOS|CriOS/.test(UA);
+let promptInstall = null; // evento di Chrome / Edge / Android / Samsung Internet
+let guidaDa = null;
+
+const giaInstallata = () => window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+
+function aggiornaInstall() {
+  $("installa").hidden = giaInstallata() || !(promptInstall || IN_IOS || IN_MAC_SAFARI);
+}
+
+function apriGuida() {
+  const passi = IN_IOS
+    ? ["Tocca il pulsante <strong>Condividi</strong> " + SVG_CONDIVIDI + " nella barra di Safari (in basso su iPhone, in alto su iPad).",
+       "Scorri il menu e tocca <strong>Aggiungi alla schermata Home</strong>.",
+       "Tocca <strong>Aggiungi</strong>: l'icona compare tra le tue app e si apre a schermo intero."]
+    : ["Nel menu <strong>File</strong> scegli <strong>Aggiungi al Dock…</strong> (oppure tocca <strong>Condividi</strong> " + SVG_CONDIVIDI + " nella barra).",
+       "Conferma con <strong>Aggiungi</strong>: l'app compare nel Dock e si apre in una finestra tutta sua."];
+  $("guida-sotto").textContent = IN_IOS ? "Su iPhone e iPad si fa in tre tocchi dal menu di Safari." : "Serve Safari 17 o successivo.";
+  $("guida-passi").innerHTML = passi.map((t) => "<li><span>" + t + "</span></li>").join("");
+  $("guida-nota").textContent = IN_IOS ? "Se non vedi l'opzione, apri questa pagina con Safari." : "";
+  guidaDa = document.activeElement;
+  $("guida").classList.add("aperta");
+  $("guida-chiudi").focus();
+}
+
+function chiudiGuida() {
+  $("guida").classList.remove("aperta");
+  if (guidaDa && guidaDa.focus) guidaDa.focus();
+}
+
+async function installa() {
+  if (!promptInstall) { apriGuida(); return; }
+  const evento = promptInstall;
+  promptInstall = null; // il prompt si può usare una volta sola
+  aggiornaInstall();
+  try {
+    evento.prompt();
+    await evento.userChoice;
+  } catch (e) { /* prompt chiuso o non disponibile */ }
+}
+
+// L'evento può arrivare prima che la pagina sia pronta: ascolto subito
+window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); promptInstall = e; aggiornaInstall(); });
+window.addEventListener("appinstalled", () => { promptInstall = null; aggiornaInstall(); toast("App installata", "ok"); });
+
+// ---------- bacheca avvisi ----------
+const MESI = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
+const SVG_MATITA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+const SVG_CESTINO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/></svg>';
+const SVG_CAMPANA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>';
+const VISTI_KEY = "turni-avvisi-visti";
+
+const leggiVisti = () => { try { return Number(localStorage.getItem(VISTI_KEY)) || 0; } catch (e) { return 0; } };
+const tsAvviso = (a) => Date.parse(a.creato) || 0;
+
+function quandoBreve(iso) {
+  const d = new Date(iso);
+  if (isNaN(d)) return "";
+  const ora = p2(d.getHours()) + ":" + p2(d.getMinutes());
+  const oggi = new Date();
+  const ieri = new Date();
+  ieri.setDate(oggi.getDate() - 1);
+  if (d.toDateString() === oggi.toDateString()) return "oggi alle " + ora;
+  if (d.toDateString() === ieri.toDateString()) return "ieri alle " + ora;
+  return d.getDate() + " " + MESI[d.getMonth()] + (d.getFullYear() !== oggi.getFullYear() ? " " + d.getFullYear() : "") + " alle " + ora;
+}
+
+// Testo sicuro: tutto è escapato, e solo gli indirizzi http(s) diventano link
+function linkifica(testo) {
+  let out = "", ultimo = 0, m;
+  const re = /https?:\/\/[^\s<>"']+/g;
+  while ((m = re.exec(testo))) {
+    let url = m[0], coda = "";
+    const t = url.match(/[.,;:!?)\]]+$/);
+    if (t) { coda = t[0]; url = url.slice(0, -coda.length); }
+    out += esc(testo.slice(ultimo, m.index)) + '<a href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(url) + "</a>" + esc(coda);
+    ultimo = m.index + m[0].length;
+  }
+  return out + esc(testo.slice(ultimo));
+}
+
+function coloreAutore(nome) {
+  let h = 0;
+  for (const c of nome) h = (h * 31 + c.charCodeAt(0)) % 360;
+  return "hsl(" + h + " 52% 40%)";
+}
+
+function cardAvviso(a) {
+  const nuovo = S.tab === "avvisi" && tsAvviso(a) > S.visteFino && !S.propri.has(a.id);
+  const anima = S.disegnati && !S.idRend.has(a.id);
+  const conferma = S.confermaId === a.id;
+  const quando = quandoBreve(a.creato) + (a.modificato ? ", modificato" : "");
+  const autore = a.autore || "Anonimo";
+  return '<article class="avviso' + (nuovo ? " nuovo" : "") + (anima ? " anima" : "") + '" data-id="' + esc(a.id) + '">' +
+    '<div class="av-testa">' +
+      '<span class="av-iniz" style="background:' + coloreAutore(autore) + '" aria-hidden="true">' + esc(autore.charAt(0).toUpperCase()) + "</span>" +
+      '<div class="av-chi"><strong>' + esc(autore) + "</strong><span>" + esc(quando) + "</span>" + (nuovo ? '<span class="nuovo-pill">Nuovo</span>' : "") + "</div>" +
+      '<div class="av-az">' +
+        '<button type="button" class="mini" data-az="modifica" aria-label="Modifica avviso">' + SVG_MATITA + "</button>" +
+        (conferma
+          ? '<button type="button" class="mini conferma" data-az="elimina" aria-label="Conferma eliminazione">Elimina?</button>'
+          : '<button type="button" class="mini" data-az="elimina" aria-label="Elimina avviso">' + SVG_CESTINO + "</button>") +
+      "</div>" +
+    "</div>" +
+    (a.titolo ? '<h3 class="av-titolo">' + esc(a.titolo) + "</h3>" : "") +
+    '<p class="av-testo">' + linkifica(a.testo) + "</p>" +
+    "</article>";
+}
+
+function disegnaAvvisi() {
+  const box = $("lista-avvisi");
+  if (!S.avvisi) {
+    box.innerHTML = S.errore
+      ? '<div class="vuoto">' + SVG_CAMPANA + '<strong>Non riesco a caricare gli avvisi</strong><p>Controlla la connessione.</p><button type="button" id="av-riprova">Riprova</button></div>'
+      : '<div class="sk-card"></div>'.repeat(3);
+    return;
+  }
+  if (!S.avvisi.length) {
+    box.innerHTML = '<div class="vuoto">' + SVG_CAMPANA + "<strong>Nessun avviso</strong><p>Scrivi il primo con il pulsante in basso.</p></div>";
+  } else {
+    box.innerHTML = S.avvisi.map(cardAvviso).join("");
+    S.avvisi.forEach((a) => S.idRend.add(a.id));
+  }
+  S.disegnati = true;
+}
+
+function aggiornaBadge() {
+  const b = $("badge-avvisi");
+  const visti = leggiVisti();
+  const n = S.tab === "avvisi" || !S.avvisi ? 0 : S.avvisi.filter((a) => tsAvviso(a) > visti).length;
+  b.hidden = n === 0;
+  b.textContent = n > 9 ? "9+" : String(n);
+  $("tab-avvisi").setAttribute("aria-label", "Avvisi" + (n ? ", " + n + (n === 1 ? " nuovo" : " nuovi") : ""));
+}
+
+function segnaVisti() {
+  if (!S.avvisi || !S.avvisi.length) { aggiornaBadge(); return; }
+  const max = Math.max.apply(null, S.avvisi.map(tsAvviso));
+  if (max > leggiVisti()) { try { localStorage.setItem(VISTI_KEY, String(max)); } catch (e) { /* non salvato */ } }
+  aggiornaBadge();
+}
+
+function impostaAvvisi(lista, silenzioso) {
+  const firma = JSON.stringify(lista);
+  if (firma === S.avvisiFirma) return;
+  S.avvisiFirma = firma;
+  if (!silenzioso && S.avvisi && S.tab !== "avvisi") {
+    const prima = new Set(S.avvisi.map((a) => a.id));
+    if (lista.some((a) => !prima.has(a.id) && !S.propri.has(a.id))) toast("Nuovo avviso in bacheca");
+  }
+  S.avvisi = lista;
+  S.confermaId = S.confermaId && lista.some((a) => a.id === S.confermaId) ? S.confermaId : null;
+  disegnaAvvisi();
+  if (S.tab === "avvisi") segnaVisti(); else aggiornaBadge();
+}
+
+async function avvisoApi(corpo) {
+  if (DEMO) return demoAvviso(corpo);
+  const r = await fetchJson(URL_SCRIPT, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(corpo) });
+  if (!r.ok) throw new Error(r.errore || "Operazione non riuscita.");
+  return r;
+}
+
+let timerConferma;
+async function chiediElimina(id) {
+  if (S.confermaId !== id) {
+    // primo tocco: il cestino diventa "Elimina?" per qualche secondo
+    S.confermaId = id;
+    disegnaAvvisi();
+    const bottone = $("lista-avvisi").querySelector('[data-id="' + id + '"] [data-az="elimina"]');
+    if (bottone) bottone.focus();
+    clearTimeout(timerConferma);
+    timerConferma = setTimeout(() => { S.confermaId = null; disegnaAvvisi(); }, 3500);
+    return;
+  }
+  clearTimeout(timerConferma);
+  S.confermaId = null;
+  try {
+    const r = await avvisoApi({ azione: "avviso_elimina", id });
+    impostaAvvisi(r.avvisi, true);
+    toast("Avviso eliminato", "ok");
+  } catch (e) {
+    toast(e.message, "err");
+    disegnaAvvisi();
+    aggiorna();
+  }
+}
+
+// ---------- cassetto per scrivere / modificare ----------
+let scriviIniziale = "";
+let scriviDa = null;
+let trascina = null;
+const valoriForm = () => JSON.stringify([$("f-autore").value.trim(), $("f-titolo").value.trim(), $("f-testo").value.trim()]);
+const sporcoScrivi = () => valoriForm() !== scriviIniziale;
+
+function contaTesto() {
+  const n = $("f-testo").value.length;
+  $("f-conta").textContent = n + "/1000";
+  $("f-conta").classList.toggle("limite", n > 900);
+}
+function autoAltezza() {
+  const t = $("f-testo");
+  t.style.height = "auto";
+  t.style.height = Math.min(Math.max(t.scrollHeight + 2, 112), Math.round(window.innerHeight * 0.34)) + "px";
+}
+
+function apriScrivi(id) {
+  const a = id ? (S.avvisi || []).find((x) => x.id === id) : null;
+  if (id && !a) { toast("Questo avviso non esiste più", "err"); return; }
+  S.modificaId = a ? a.id : null;
+  let firma = "";
+  try { firma = localStorage.getItem("turni-firma") || ""; } catch (e) { /* niente firma salvata */ }
+  $("scrivi-titolo").textContent = a ? "Modifica avviso" : "Nuovo avviso";
+  $("sh-invia").textContent = a ? "Salva" : "Pubblica";
+  $("f-autore").value = a ? a.autore : (S.volontario ? titolo(S.volontario) : firma);
+  $("f-titolo").value = a ? a.titolo : "";
+  $("f-testo").value = a ? a.testo : "";
+  $("sh-errore").textContent = "";
+  scriviIniziale = valoriForm();
+  contaTesto();
+  scriviDa = document.activeElement;
+  const el = $("scrivi");
+  el.classList.remove("chiude");
+  el.classList.add("aperta");
+  $("sh-foglio").style.transform = "";
+  document.body.style.overflow = "hidden";
+  $("app").inert = true;
+  $("fab").inert = true;
+  autoAltezza();
+  // il focus deve partire subito, dentro il tocco: altrimenti su iPhone la tastiera non si apre
+  const t = $("f-testo");
+  const campo = $("f-autore").value ? t : $("f-autore");
+  campo.focus({ preventScroll: true });
+  if (campo === t) t.setSelectionRange(t.value.length, t.value.length);
+}
+
+function chiudiScrivi(forza) {
+  const el = $("scrivi");
+  if (!el.classList.contains("aperta") || el.classList.contains("chiude")) return;
+  if (!forza && sporcoScrivi() && !confirm("Scartare quello che hai scritto?")) return;
+  el.classList.add("chiude");
+  setTimeout(() => {
+    el.classList.remove("aperta", "chiude");
+    $("sh-foglio").style.transform = "";
+    document.documentElement.style.removeProperty("--kb");
+    document.body.style.overflow = "";
+    $("app").inert = false;
+    $("fab").inert = false;
+    if (scriviDa && scriviDa.focus) scriviDa.focus();
+  }, 230);
+}
+
+async function inviaAvviso() {
+  if (S.salvando) return;
+  const autore = $("f-autore").value.trim();
+  const tit = $("f-titolo").value.trim();
+  const testo = $("f-testo").value.trim();
+  const err = $("sh-errore");
+  if (!testo) { err.textContent = "Scrivi il testo dell'avviso."; $("f-testo").focus(); return; }
+  if (!autore) { err.textContent = "Aggiungi la tua firma."; $("f-autore").focus(); return; }
+  err.textContent = "";
+  S.salvando = true;
+  $("sh-invia").disabled = true;
+  $("sh-annulla").disabled = true;
+  $("sh-invia").textContent = "Invio…";
+  const modifica = !!S.modificaId;
+  try {
+    const r = await avvisoApi(modifica
+      ? { azione: "avviso_modifica", id: S.modificaId, autore, titolo: tit, testo }
+      : { azione: "avviso_crea", autore, titolo: tit, testo });
+    try { localStorage.setItem("turni-firma", autore); } catch (e) { /* firma non salvata */ }
+    if (r.id) S.propri.add(r.id);
+    impostaAvvisi(r.avvisi, true);
+    chiudiScrivi(true);
+    toast(modifica ? "Avviso aggiornato" : "Avviso pubblicato", "ok");
+    if (!modifica) window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch (e) {
+    err.textContent = e.message;
+    if (modifica) aggiorna();
+  } finally {
+    S.salvando = false;
+    $("sh-invia").disabled = false;
+    $("sh-annulla").disabled = false;
+    $("sh-invia").textContent = modifica ? "Salva" : "Pubblica";
+  }
+}
+
+// ---------- tab e testata a scomparsa ----------
+function misuraTestata() {
+  const h = document.querySelector("header.top");
+  if (h) $("testata").style.setProperty("--h-header", h.offsetHeight + "px");
+}
+
+function mostraTestata() { $("testata").classList.remove("nascosta"); }
+
+let ultimoY = 0;
+let scrollInAttesa = false;
+function suScroll() {
+  const y = window.scrollY;
+  const delta = y - ultimoY;
+  const scorrevole = document.documentElement.scrollHeight - window.innerHeight > 160; // se non c'è da scorrere, resta visibile
+  if (y < 40 || !scorrevole) mostraTestata();
+  else if (Math.abs(delta) > 8) {
+    if (delta > 0 && y > 90) $("testata").classList.add("nascosta");
+    else if (delta < 0) mostraTestata();
+  }
+  if (Math.abs(delta) > 8 || y < 40) ultimoY = y;
+}
+
+function vaiTab(nome) {
+  if (nome === S.tab) return;
+  if (nome !== "turni" && nome !== "avvisi") return;
+  S.tab = nome;
+  S.confermaId = null;
+  $("tabs").dataset.attiva = nome;
+  ["turni", "avvisi"].forEach((n) => {
+    const attivo = n === nome;
+    $("tab-" + n).setAttribute("aria-selected", attivo ? "true" : "false");
+    $("tab-" + n).tabIndex = attivo ? 0 : -1;
+    $("pannello-" + n).hidden = !attivo;
+  });
+  const pannello = $("pannello-" + nome);
+  pannello.classList.remove("entra-tab");
+  void pannello.offsetWidth; // riavvia l'animazione
+  pannello.classList.add("entra-tab");
+  $("fab").hidden = nome !== "avvisi";
+  aggiornaBarra();
+  aggiornaPill();
+  window.scrollTo(0, 0);
+  ultimoY = 0;
+  mostraTestata();
+  if (nome === "avvisi") {
+    S.visteFino = leggiVisti(); // quello che arriva dopo è "nuovo"
+    disegnaAvvisi();
+    segnaVisti();
+  } else {
+    aggiornaBadge();
+  }
+  try { history.replaceState(null, "", nome === "avvisi" ? "#avvisi" : location.pathname + location.search); } catch (e) { /* ambienti senza history */ }
+}
+
+// ---------- blocco dei turni con PIN ----------
+const SVG_LUC_CHIUSO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>';
+const SVG_LUC_APERTO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>';
+let pinAzione = "turni_blocca";
+let pinDa = null;
+let pinInCorso = false;
+
+function aggiornaPill() {
+  const p = $("pill");
+  if (S.tab === "avvisi") { p.textContent = "Bacheca avvisi"; p.classList.remove("bloccata"); }
+  else if (S.bloccati) { p.innerHTML = SVG_LUC_CHIUSO + "Turni bloccati"; p.classList.add("bloccata"); }
+  else { p.textContent = "Scegli i tuoi turni"; p.classList.remove("bloccata"); }
+}
+
+function disegnaStato() {
+  const b = S.bloccati;
+  const card = $("stato-blocco");
+  card.hidden = !S.pronto;
+  card.classList.toggle("bloccato", b);
+  card.classList.toggle("aperto", !b);
+  $("stato-ico").innerHTML = b ? SVG_LUC_CHIUSO : SVG_LUC_APERTO;
+  $("stato-titolo").textContent = b ? "Turni bloccati" : "Turni sbloccati";
+  $("stato-sotto").textContent = b
+    ? "Le scelte sono chiuse" + (S.bloccoQuando ? " da " + quandoBreve(S.bloccoQuando) : "") + ". Puoi solo consultarli."
+    : "Puoi scegliere e modificare i tuoi turni.";
+  $("stato-btn").innerHTML = (b ? SVG_LUC_APERTO : SVG_LUC_CHIUSO) + (b ? "Sblocca" : "Blocca");
+  $("stato-btn").setAttribute("aria-label", b ? "Sblocca i turni con il PIN" : "Blocca i turni con il PIN");
+  $("tab-lock").innerHTML = b ? SVG_LUC_CHIUSO : "";
+  $("tab-lock").hidden = !b;
+  $("tab-turni").setAttribute("aria-label", b ? "Turni, bloccati" : "Turni");
+  aggiornaPill();
+}
+
+async function bloccoApi(azione, pin) {
+  if (DEMO) return demoBlocco(azione, pin);
+  const r = await fetchJson(URL_SCRIPT, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ azione, pin }) });
+  if (!r.ok) throw new Error(r.errore || "Operazione non riuscita.");
+  return r;
+}
+
+function apriPin() {
+  if (!S.pronto) return;
+  pinAzione = S.bloccati ? "turni_sblocca" : "turni_blocca";
+  $("pin-titolo").textContent = S.bloccati ? "Sblocca i turni" : "Blocca i turni";
+  $("pin-info").textContent = S.bloccati
+    ? "Tutti potranno di nuovo scegliere e modificare i turni. Serve il PIN."
+    : "Nessuno potrà più cambiare i turni finché non li sblocchi con lo stesso PIN. Gli avvisi restano liberi.";
+  $("pin-conferma").textContent = S.bloccati ? "Sblocca" : "Blocca";
+  $("pin-campo").value = "";
+  $("pin-errore").textContent = "";
+  pinDa = document.activeElement;
+  const el = $("pin");
+  el.classList.remove("chiude");
+  el.classList.add("aperta");
+  $("pin-foglio").style.transform = "";
+  document.body.style.overflow = "hidden";
+  $("app").inert = true;
+  $("fab").inert = true;
+  $("pin-campo").focus({ preventScroll: true });
+}
+
+function chiudiPin() {
+  const el = $("pin");
+  if (!el.classList.contains("aperta") || el.classList.contains("chiude")) return;
+  el.classList.add("chiude");
+  setTimeout(() => {
+    el.classList.remove("aperta", "chiude");
+    $("pin-foglio").style.transform = "";
+    $("pin-campo").value = "";
+    document.documentElement.style.removeProperty("--kb");
+    document.body.style.overflow = "";
+    $("app").inert = false;
+    $("fab").inert = false;
+    if (pinDa && pinDa.focus) pinDa.focus();
+  }, 230);
+}
+
+async function confermaPin() {
+  if (pinInCorso) return;
+  const pin = $("pin-campo").value.trim();
+  const err = $("pin-errore");
+  if (!/^\d{4,8}$/.test(pin)) {
+    err.textContent = "Inserisci il PIN: da 4 a 8 cifre.";
+    $("pin-campo").classList.remove("shake");
+    void $("pin-campo").offsetWidth;
+    $("pin-campo").classList.add("shake");
+    return;
+  }
+  pinInCorso = true;
+  $("pin-conferma").disabled = true;
+  $("pin-annulla").disabled = true;
+  const etichetta = $("pin-conferma").textContent;
+  $("pin-conferma").textContent = "Verifico…";
+  try {
+    const r = await bloccoApi(pinAzione, pin);
+    S.bloccati = !!r.bloccati;
+    S.bloccoQuando = r.bloccoQuando || "";
+    if (S.bloccati && sporco()) S.sel = new Set(S.saved); // le modifiche non inviate non valgono più
+    chiudiPin();
+    disegnaTutto();
+    toast(S.bloccati ? "Turni bloccati" : "Turni sbloccati", "ok");
+    aggiorna();
+  } catch (e) {
+    err.textContent = e.message;
+    $("pin-campo").classList.remove("shake");
+    void $("pin-campo").offsetWidth;
+    $("pin-campo").classList.add("shake");
+    $("pin-campo").select();
+  } finally {
+    pinInCorso = false;
+    $("pin-conferma").disabled = false;
+    $("pin-annulla").disabled = false;
+    $("pin-conferma").textContent = etichetta;
+  }
+}
+
+// ---------- settimana (turni bloccati) e richieste ----------
+const SVG_SPOSTA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h14M14 3l4 4-4 4M20 17H6M10 13l-4 4 4 4"/></svg>';
+const TIPO_FRASE = { Spostamento: "uno spostamento", Permesso: "un permesso" };
+const fraseRichiesta = (r) => "<strong>" + esc(titolo(r.volontario)) + "</strong> ha richiesto " + (TIPO_FRASE[r.tipo] || "una variazione") + " per <strong>" + esc(GIORNI[r.giorno].toLowerCase()) + "</strong>";
+const turniDi = (nome) => Object.keys(S.slot).filter((k) => (S.slot[k] || []).includes(nome));
+const altriSu = (k, nome) => (S.slot[k] || []).filter((n) => n !== nome).length;
+
+function aggiornaBarra() { $("barra-turni").hidden = S.tab !== "turni" || S.bloccati; }
+
+// Con i turni bloccati: niente cognomi da scegliere, ma il programma della settimana e le richieste
+function disegnaVistaBloccata() {
+  const b = S.bloccati && S.pronto;
+  ["sez-chi", "sez-turni", "legenda"].forEach((id) => $(id).classList.toggle("nascosto-b", b));
+  $("sez-settimana").hidden = !b;
+  $("sez-richieste").hidden = !b;
+  $("stato-rich").hidden = !b;
+  aggiornaBarra();
+  if (b) { disegnaSettimana(); disegnaRichieste(); }
+}
+
+function disegnaSettimana() {
+  const oggi = (new Date().getDay() + 6) % 7; // 0 = lunedì
+  const rich = new Set();
+  (S.richieste || []).forEach((r) => { if (r.stato === "aperta") rich.add(r.volontario + "|" + r.giorno); });
+  $("settimana").innerHTML = GIORNI.map((g, d) => {
+    const celle = ["M", "P"].map((t) => {
+      const k = d + "-" + t;
+      const nomi = nomiTurno(k);
+      const chiuso = S.nonDisp.includes(k);
+      const corpo = chiuso ? '<span class="sg-vuoto">Chiuso</span>'
+        : (nomi.length ? nomi.map((n) => '<span class="sg-nome' + (rich.has(n + "|" + d) ? " rich" : "") + '">' + esc(titolo(n)) + "</span>").join("") : '<span class="sg-vuoto">Nessuno</span>');
+      return '<div class="sg-c' + (nomi.length > S.cap ? " strao" : "") + '"><div class="sg-e"><span class="sg-ico">' + (t === "M" ? SVG_SOLE : SVG_TRAMONTO) + "</span>" +
+        (t === "M" ? "Mattina" : "Pomeriggio") + (chiuso ? "" : "<i>" + nomi.length + "/" + S.cap + "</i>") + '</div><div class="sg-n">' + corpo + "</div></div>";
+    }).join("");
+    return '<div class="sg' + (d === oggi ? " oggi" : "") + '"><div class="sg-g"><strong>' + g + "</strong>" + (d === oggi ? '<span class="oggi-pill">Oggi</span>' : "") + '</div><div class="sg-t">' + celle + "</div></div>";
+  }).join("");
+}
+
+function cardRichiesta(r) {
+  const gest = r.stato === "gestita";
+  const conf = S.confermaRichId === r.id;
+  return '<article class="ric' + (gest ? " gestita" : "") + '" data-id="' + esc(r.id) + '">' +
+    '<div class="ric-testa"><p class="ric-frase">' + fraseRichiesta(r) + '</p><div class="av-az">' +
+      (gest ? "" : '<button type="button" class="ric-sposta" data-az="sposta" aria-label="Sposta ' + esc(titolo(r.volontario)) + ' con il PIN">' + SVG_SPOSTA + "Sposta</button>") +
+      (conf ? '<button type="button" class="mini conferma" data-az="elimina-r" aria-label="Conferma eliminazione">Elimina?</button>'
+            : '<button type="button" class="mini" data-az="elimina-r" aria-label="Elimina richiesta">' + SVG_CESTINO + "</button>") +
+    "</div></div>" +
+    '<div class="ric-meta"><span class="ric-stato ' + (gest ? "ok" : "aperta") + '">' + (gest ? "Gestita" : "Da gestire") + "</span><span>" + esc(quandoBreve(r.creato)) + "</span></div>" +
+    (r.nota ? '<p class="ric-nota">\u201c' + esc(r.nota) + "\u201d</p>" : "") +
+    (gest && r.dettaglio ? '<p class="ric-det">' + esc(r.dettaglio) + "</p>" : "") + "</article>";
+}
+
+function disegnaRichieste() {
+  const lista = S.richieste;
+  const aperte = lista ? lista.filter((r) => r.stato === "aperta").length : 0;
+  $("ric-conta").textContent = aperte ? aperte + " da gestire" : "";
+  $("lista-richieste").innerHTML = !lista ? "" : (lista.length ? lista.map(cardRichiesta).join("") : '<p class="ric-vuoto">Nessuna richiesta. Se ti serve un permesso o uno spostamento, usa il pulsante qui sopra.</p>');
+}
+
+function impostaRichieste(lista, silenzioso) {
+  const firma = JSON.stringify(lista);
+  if (firma === S.richiesteFirma) return;
+  S.richiesteFirma = firma;
+  if (!silenzioso && S.richieste) {
+    const prima = new Set(S.richieste.map((r) => r.id));
+    const nuove = lista.filter((r) => !prima.has(r.id) && r.stato === "aperta");
+    if (nuove.length) toast("Nuova richiesta: " + titolo(nuove[0].volontario));
+  }
+  S.richieste = lista;
+  if (S.confermaRichId && !lista.some((r) => r.id === S.confermaRichId)) S.confermaRichId = null;
+  disegnaVistaBloccata();
+}
+
+async function richiestaApi(corpo) {
+  if (DEMO) return demoRichiesta(corpo);
+  const r = await fetchJson(URL_SCRIPT, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(corpo) });
+  if (!r.ok) throw new Error(r.errore || "Operazione non riuscita.");
+  return r;
+}
+
+let timerConfermaRich;
+async function chiediEliminaRichiesta(id) {
+  if (S.confermaRichId !== id) {
+    S.confermaRichId = id; // primo tocco: il cestino diventa "Elimina?"
+    disegnaRichieste();
+    const b = $("lista-richieste").querySelector('[data-id="' + id + '"] [data-az="elimina-r"]');
+    if (b) b.focus();
+    clearTimeout(timerConfermaRich);
+    timerConfermaRich = setTimeout(() => { S.confermaRichId = null; disegnaRichieste(); }, 3500);
+    return;
+  }
+  clearTimeout(timerConfermaRich);
+  S.confermaRichId = null;
+  try {
+    const r = await richiestaApi({ azione: "richiesta_elimina", id });
+    impostaRichieste(r.richieste, true);
+    toast("Richiesta eliminata", "ok");
+  } catch (e) {
+    toast(e.message, "err");
+    disegnaRichieste();
+    aggiorna();
+  }
+}
+
+// ---------- cassetti generici ----------
+const daOverlay = {};
+function apriOverlay(id, foglioId, focusId) {
+  daOverlay[id] = document.activeElement;
+  const el = $(id);
+  el.classList.remove("chiude");
+  el.classList.add("aperta");
+  $(foglioId).style.transform = "";
+  document.body.style.overflow = "hidden";
+  $("app").inert = true;
+  $("fab").inert = true;
+  if (focusId) $(focusId).focus({ preventScroll: true });
+}
+function chiudiOverlay(id, foglioId) {
+  const el = $(id);
+  if (!el.classList.contains("aperta") || el.classList.contains("chiude")) return;
+  el.classList.add("chiude");
+  setTimeout(() => {
+    el.classList.remove("aperta", "chiude");
+    $(foglioId).style.transform = "";
+    document.documentElement.style.removeProperty("--kb");
+    document.body.style.overflow = "";
+    $("app").inert = false;
+    $("fab").inert = false;
+    const da = daOverlay[id];
+    if (da && da.focus) da.focus();
+  }, 230);
+}
+
+// ---------- richiesta di spostamento / permesso ----------
+const rq = { vol: null, giorno: null, tipo: "Spostamento", invio: false };
+const chiudiRichiesta = () => chiudiOverlay("richiesta", "rq-foglio");
+
+function rqPaint() {
+  const ha = new Set();
+  if (rq.vol) turniDi(rq.vol).forEach((k) => ha.add(Number(k.split("-")[0])));
+  $("rq-chi").querySelectorAll(".opz").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === rq.vol)));
+  $("rq-giorno").querySelectorAll(".opz").forEach((b) => {
+    const d = Number(b.dataset.g);
+    b.setAttribute("aria-pressed", String(rq.giorno === d));
+    b.classList.toggle("ha", ha.has(d));
+  });
+  $("rq-tipo").querySelectorAll(".opz").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.t === rq.tipo)));
+}
+
+function apriRichiesta() {
+  if (!S.pronto) return;
+  let ultimo = "";
+  try { ultimo = localStorage.getItem("turni-ultimo-vol") || ""; } catch (e) { /* niente */ }
+  rq.vol = S.volontario || (S.volontari.some((v) => v.nome === ultimo) ? ultimo : null);
+  rq.giorno = null;
+  rq.tipo = "Spostamento";
+  $("rq-nota").value = "";
+  $("rq-errore").textContent = "";
+  $("rq-chi").innerHTML = S.volontari.map((v) => '<button type="button" class="opz" data-v="' + esc(v.nome) + '" aria-pressed="false">' + esc(titolo(v.nome)) + "</button>").join("");
+  $("rq-giorno").innerHTML = GIORNI.map((g, d) => '<button type="button" class="opz" data-g="' + d + '" aria-pressed="false" aria-label="' + g + '">' + g.slice(0, 3) + '<i class="pt"></i></button>').join("");
+  rqPaint();
+  apriOverlay("richiesta", "rq-foglio", null);
+}
+
+async function inviaRichiesta() {
+  if (rq.invio) return;
+  const err = $("rq-errore");
+  if (!rq.vol) { err.textContent = "Scegli il tuo cognome."; return; }
+  if (rq.giorno === null) { err.textContent = "Scegli il giorno."; return; }
+  err.textContent = "";
+  rq.invio = true;
+  $("rq-invia").disabled = true;
+  $("rq-annulla").disabled = true;
+  $("rq-invia").textContent = "Invio…";
+  try {
+    const r = await richiestaApi({ azione: "richiesta_crea", volontario: rq.vol, giorno: rq.giorno, tipo: rq.tipo, nota: $("rq-nota").value.trim() });
+    try { localStorage.setItem("turni-ultimo-vol", rq.vol); } catch (e) { /* niente */ }
+    impostaRichieste(r.richieste, true);
+    chiudiRichiesta();
+    toast("Richiesta inviata", "ok");
+  } catch (e) {
+    err.textContent = e.message;
+  } finally {
+    rq.invio = false;
+    $("rq-invia").disabled = false;
+    $("rq-annulla").disabled = false;
+    $("rq-invia").textContent = "Invia richiesta";
+  }
+}
+
+// ---------- sposta un volontario da una richiesta (serve il PIN) ----------
+const sp = { r: null, iniz: new Set(), sel: new Set(), invio: false };
+const chiudiSposta = () => chiudiOverlay("sposta", "sp-foglio");
+
+function spPaint() {
+  const nome = sp.r.volontario;
+  $("sp-griglia").querySelectorAll(".sp-t").forEach((b) => {
+    const k = b.dataset.k;
+    const on = sp.sel.has(k);
+    const chiuso = S.nonDisp.includes(k);
+    b.classList.toggle("on", on);
+    b.classList.toggle("pieno", !chiuso && !sp.iniz.has(k) && altriSu(k, nome) >= S.cap);
+    b.disabled = chiuso;
+    b.setAttribute("aria-pressed", String(on));
+  });
+  const tolti = [...sp.iniz].filter((k) => !sp.sel.has(k)).sort((a, b) => ordine(a) - ordine(b));
+  const aggiunti = [...sp.sel].filter((k) => !sp.iniz.has(k)).sort((a, b) => ordine(a) - ordine(b));
+  let testo = "Nessuna modifica: la richiesta verrà solo chiusa.";
+  if (tolti.length || aggiunti.length) {
+    const parti = [];
+    if (tolti.length) parti.push("Tolto: " + tolti.map(etichetta).join(", "));
+    if (aggiunti.length) parti.push("Aggiunto: " + aggiunti.map(etichetta).join(", "));
+    testo = parti.join(". ") + ".";
+    const pieni = aggiunti.filter((k) => altriSu(k, nome) >= S.cap);
+    if (pieni.length) testo += " Attenzione: " + pieni.map(etichetta).join(", ") + (pieni.length > 1 ? " sono pieni e diventeranno straordinari." : " è pieno e diventerà straordinario.");
+  }
+  $("sp-riepilogo").textContent = testo;
+  $("sp-conferma").textContent = tolti.length || aggiunti.length ? "Sposta e chiudi richiesta" : "Chiudi richiesta";
+}
+
+function apriSposta(id) {
+  const r = (S.richieste || []).find((x) => x.id === id);
+  if (!r || r.stato !== "aperta") { toast("Questa richiesta non è più da gestire", "err"); return; }
+  sp.r = r;
+  sp.iniz = new Set(turniDi(r.volontario));
+  sp.sel = new Set(sp.iniz);
+  $("sp-titolo").textContent = "Sposta " + titolo(r.volontario);
+  $("sp-info").innerHTML = fraseRichiesta(r) + (r.nota ? ". Motivo: \u201c" + esc(r.nota) + "\u201d" : "") + ". Tocca i turni per spostarlo, poi conferma con il PIN.";
+  $("sp-griglia").innerHTML = GIORNI.map((g, d) => '<div class="sp-riga' + (d === r.giorno ? " richiesto" : "") + '"><span class="sp-g">' + g.slice(0, 3) + "</span>" +
+    ["M", "P"].map((t) => '<button type="button" class="sp-t" data-k="' + d + "-" + t + '">' + (t === "M" ? "Mattina" : "Pomeriggio") + "</button>").join("") + "</div>").join("");
+  $("sp-pin").value = "";
+  $("sp-errore").textContent = "";
+  spPaint();
+  apriOverlay("sposta", "sp-foglio", null);
+}
+
+async function confermaSposta() {
+  if (sp.invio || !sp.r) return;
+  const pin = $("sp-pin").value.trim();
+  const err = $("sp-errore");
+  if (!/^\d{4,8}$/.test(pin)) { err.textContent = "Inserisci il PIN: da 4 a 8 cifre."; $("sp-pin").focus(); return; }
+  sp.invio = true;
+  $("sp-conferma").disabled = true;
+  $("sp-annulla").disabled = true;
+  const etichettaBtn = $("sp-conferma").textContent;
+  $("sp-conferma").textContent = "Verifico…";
+  try {
+    const modificato = sp.sel.size !== sp.iniz.size || [...sp.sel].some((k) => !sp.iniz.has(k));
+    const nome = titolo(sp.r.volontario);
+    const r = await richiestaApi({ azione: "richiesta_gestisci", id: sp.r.id, pin, turni: [...sp.sel] });
+    impostaRichieste(r.richieste, true);
+    chiudiSposta();
+    toast(modificato ? nome + " spostato" : "Richiesta chiusa", "ok");
+    aggiorna(); // rilegge i turni: la settimana si aggiorna
+  } catch (e) {
+    err.textContent = e.message;
+    $("sp-pin").select();
+  } finally {
+    sp.invio = false;
+    $("sp-conferma").disabled = false;
+    $("sp-annulla").disabled = false;
+    $("sp-conferma").textContent = etichettaBtn;
   }
 }
 
@@ -612,9 +1940,136 @@ costruisciGiorni();
 disegnaGiorni();
 $("invia").addEventListener("click", invia);
 $("riprova").addEventListener("click", avvia);
+$("apri-vista").addEventListener("click", apriVista);
+$("installa").addEventListener("click", installa);
+document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => vaiTab(t.dataset.tab)));
+$("tabs").addEventListener("keydown", (e) => {
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  const nome = e.key === "ArrowRight" ? "avvisi" : "turni";
+  vaiTab(nome);
+  $("tab-" + nome).focus();
+  e.preventDefault();
+});
+window.addEventListener("scroll", () => {
+  if (scrollInAttesa) return;
+  scrollInAttesa = true;
+  requestAnimationFrame(() => { scrollInAttesa = false; suScroll(); });
+}, { passive: true });
+window.addEventListener("resize", misuraTestata);
+$("fab").addEventListener("click", () => apriScrivi(null));
+$("lista-avvisi").addEventListener("click", (e) => {
+  if (e.target.closest("#av-riprova")) { avvia(); return; }
+  const btn = e.target.closest("[data-az]");
+  if (!btn) return;
+  const id = btn.closest(".avviso").dataset.id;
+  if (btn.dataset.az === "modifica") apriScrivi(id);
+  else chiediElimina(id);
+});
+$("sh-annulla").addEventListener("click", () => chiudiScrivi(false));
+$("sh-invia").addEventListener("click", inviaAvviso);
+$("scrivi").addEventListener("click", (e) => { if (e.target === $("scrivi")) chiudiScrivi(false); });
+$("f-testo").addEventListener("input", () => { contaTesto(); autoAltezza(); });
+// trascinare la maniglia verso il basso chiude il cassetto
+function abilitaTrascina(maniglia, foglio, sovrapposizione, chiudi) {
+  let t = null;
+  maniglia.addEventListener("pointerdown", (e) => { t = { y: e.clientY, dy: 0 }; maniglia.setPointerCapture(e.pointerId); foglio.style.transition = "none"; });
+  maniglia.addEventListener("pointermove", (e) => {
+    if (!t) return;
+    t.dy = Math.max(0, e.clientY - t.y);
+    foglio.style.transform = "translateY(" + t.dy + "px)";
+  });
+  const fine = () => {
+    if (!t) return;
+    const dy = t.dy;
+    t = null;
+    foglio.style.transition = "";
+    if (dy > 110) {
+      chiudi();
+      if (sovrapposizione.classList.contains("aperta") && !sovrapposizione.classList.contains("chiude")) foglio.style.transform = "";
+    } else foglio.style.transform = "";
+  };
+  maniglia.addEventListener("pointerup", fine);
+  maniglia.addEventListener("pointercancel", fine);
+}
+abilitaTrascina($("sh-maniglia"), $("sh-foglio"), $("scrivi"), () => chiudiScrivi(false));
+abilitaTrascina($("pin-maniglia"), $("pin-foglio"), $("pin"), () => chiudiPin());
+$("stato-btn").addEventListener("click", apriPin);
+$("stato-rich").addEventListener("click", apriRichiesta);
+abilitaTrascina($("rq-maniglia"), $("rq-foglio"), $("richiesta"), chiudiRichiesta);
+abilitaTrascina($("sp-maniglia"), $("sp-foglio"), $("sposta"), chiudiSposta);
+$("rq-annulla").addEventListener("click", chiudiRichiesta);
+$("rq-invia").addEventListener("click", inviaRichiesta);
+$("richiesta").addEventListener("click", (e) => { if (e.target === $("richiesta")) chiudiRichiesta(); });
+$("rq-chi").addEventListener("click", (e) => { const b = e.target.closest(".opz"); if (b) { rq.vol = b.dataset.v; rqPaint(); } });
+$("rq-giorno").addEventListener("click", (e) => { const b = e.target.closest(".opz"); if (b) { rq.giorno = Number(b.dataset.g); rqPaint(); } });
+$("rq-tipo").addEventListener("click", (e) => { const b = e.target.closest(".opz"); if (b) { rq.tipo = b.dataset.t; rqPaint(); } });
+$("sp-annulla").addEventListener("click", chiudiSposta);
+$("sp-conferma").addEventListener("click", confermaSposta);
+$("sposta").addEventListener("click", (e) => { if (e.target === $("sposta")) chiudiSposta(); });
+$("sp-griglia").addEventListener("click", (e) => {
+  const b = e.target.closest(".sp-t");
+  if (!b || b.disabled) return;
+  if (sp.sel.has(b.dataset.k)) sp.sel.delete(b.dataset.k); else sp.sel.add(b.dataset.k);
+  spPaint();
+});
+$("sp-pin").addEventListener("keydown", (e) => { if (e.key === "Enter") confermaSposta(); });
+$("sp-pin").addEventListener("input", () => { $("sp-pin").value = $("sp-pin").value.replace(/\D/g, ""); $("sp-errore").textContent = ""; });
+$("lista-richieste").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-az]");
+  if (!btn) return;
+  const id = btn.closest(".ric").dataset.id;
+  if (btn.dataset.az === "sposta") apriSposta(id);
+  else chiediEliminaRichiesta(id);
+});
+$("pin-annulla").addEventListener("click", chiudiPin);
+$("pin-conferma").addEventListener("click", confermaPin);
+$("pin").addEventListener("click", (e) => { if (e.target === $("pin")) chiudiPin(); });
+$("pin-campo").addEventListener("keydown", (e) => { if (e.key === "Enter") confermaPin(); });
+$("pin-campo").addEventListener("input", () => { $("pin-campo").value = $("pin-campo").value.replace(/\D/g, ""); $("pin-errore").textContent = ""; });
+// la tastiera del telefono non deve coprire il cassetto
+if (window.visualViewport) {
+  const suViewport = () => {
+    if (!["scrivi", "pin", "richiesta", "sposta"].some((id) => $(id).classList.contains("aperta"))) return;
+    const vv = window.visualViewport;
+    const kb = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+    document.documentElement.style.setProperty("--kb", kb + "px");
+  };
+  window.visualViewport.addEventListener("resize", suViewport);
+  window.visualViewport.addEventListener("scroll", suViewport);
+}
+$("guida-chiudi").addEventListener("click", chiudiGuida);
+$("guida").addEventListener("click", (e) => { if (e.target === $("guida")) chiudiGuida(); });
+window.matchMedia("(display-mode: standalone)").addEventListener("change", aggiornaInstall);
+aggiornaInstall();
+if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
+  navigator.serviceWorker.register("sw.js").catch(() => { /* senza service worker il sito funziona uguale */ });
+}
+$("vista-chiudi").addEventListener("click", chiudiVista);
+$("vista-copia").addEventListener("click", copiaTesto);
+$("vista-pulito").addEventListener("click", (e) => {
+  e.stopPropagation();
+  $("vista").classList.add("pulita");
+  toast("Fai lo screenshot. Tocca lo schermo per tornare.");
+});
+$("vista").addEventListener("click", () => { $("vista").classList.remove("pulita"); });
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  if ($("sposta").classList.contains("aperta")) chiudiSposta();
+  else if ($("richiesta").classList.contains("aperta")) chiudiRichiesta();
+  else if ($("pin").classList.contains("aperta")) chiudiPin();
+  else if ($("scrivi").classList.contains("aperta")) chiudiScrivi(false);
+  else if ($("guida").classList.contains("aperta")) chiudiGuida();
+  else if ($("vista").classList.contains("aperta")) chiudiVista();
+});
+impostaTema(document.documentElement.dataset.tema === "light" ? "light" : "dark", false);
+$("tema").addEventListener("click", () => impostaTema(document.documentElement.dataset.tema === "light" ? "dark" : "light", true));
 document.addEventListener("visibilitychange", () => { if (!document.hidden) aggiorna(); });
 setInterval(aggiorna, POLL_MS);
 window.addEventListener("beforeunload", (e) => { if (sporco()) { e.preventDefault(); e.returnValue = ""; } });
+misuraTestata();
+if (window.ResizeObserver) new ResizeObserver(misuraTestata).observe(document.querySelector("header.top"));
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(misuraTestata);
+if (location.hash === "#avvisi") vaiTab("avvisi");
 avvia();
 </script>
 </body>
